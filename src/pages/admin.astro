@@ -1,0 +1,613 @@
+---
+// Admin panel — login gate + full dashboard
+// Mock auth: admin / pancatz2026
+---
+
+<!DOCTYPE html>
+<html lang="ms">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Admin — Pancatz Invitations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Geist:wght@400;500;600&family=Geist+Mono:wght@500;700&display=swap" rel="stylesheet" />
+    <style is:inline>
+      :root { --canvas: #0A0A0A; --surface: #171717; --surface-raised: #202020; --ink: #F0EDE8; --muted: #B8B2AA; --primary: #C8FF00; --accent: #FF6B4A; --border: rgba(240,237,232,0.08); }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { font-family: 'Geist', system-ui, sans-serif; font-size: 16px; background: var(--canvas); color: var(--ink); -webkit-font-smoothing: antialiased; }
+      body { min-height: 100dvh; }
+    </style>
+  </head>
+  <body>
+
+    <!-- ======== LOGIN ======== -->
+    <div id="login-screen" class="login-screen">
+      <div class="login-card">
+        <span class="login-label">Admin</span>
+        <h1 class="login-title">Pancatz Invitations</h1>
+        <form id="login-form" class="login-form" onsubmit="var u=document.querySelector('#login-screen input[name=username]').value;var p=document.querySelector('#login-screen input[name=password]').value;if(u==='admin'&&p==='pancatz2026'){document.getElementById('login-screen').hidden=true;document.getElementById('dashboard-screen').hidden=false;if(typeof renderAll==='function')renderAll()}else{var e=document.getElementById('login-error');e.hidden=false;e.textContent='Nama pengguna atau kata laluan tidak sah.'}return false;">
+          <label class="login-field">
+            <span class="login-field-label">Nama Pengguna</span>
+            <input type="text" name="username" class="login-input" required autocomplete="username" />
+          </label>
+          <label class="login-field">
+            <span class="login-field-label">Kata Laluan</span>
+            <input type="password" name="password" class="login-input" required autocomplete="current-password" />
+          </label>
+          <button type="submit" class="login-btn">Log Masuk</button>
+          <p class="login-error" id="login-error" hidden></p>
+        </form>
+      </div>
+    </div>
+
+    <!-- ======== DASHBOARD ======== -->
+    <div id="dashboard-screen" class="dashboard" hidden>
+      <nav class="nav">
+        <div class="nav-brand">
+          <span class="nav-logo">Pancatz</span>
+          <span class="nav-sub">Invitations Admin</span>
+        </div>
+        <div class="nav-tabs">
+          <button class="nav-tab active" data-tab="overview">Gambaran</button>
+          <button class="nav-tab" data-tab="invitations">Undangan</button>
+          <button class="nav-tab" data-tab="rsvps">RSVP</button>
+          <button class="nav-tab" data-tab="templates">Templat</button>
+        </div>
+        <button class="nav-logout" id="logout-btn">Log Keluar</button>
+      </nav>
+
+      <!-- Overview Tab -->
+      <main class="content" id="tab-overview">
+        <div class="page-header">
+          <h2 class="page-title">Gambaran</h2>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-num">3</span>
+            <span class="stat-label">Jumlah Undangan</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num">2</span>
+            <span class="stat-label">Diterbitkan</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num">1</span>
+            <span class="stat-label">Draf</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="total-rsvps">—</span>
+            <span class="stat-label">Jumlah RSVP</span>
+          </div>
+        </div>
+      </main>
+
+      <!-- Invitations Tab -->
+      <main class="content" id="tab-invitations" hidden>
+        <div class="page-header">
+          <h2 class="page-title">Undangan</h2>
+          <button class="btn-action" id="new-invitation-btn">+ Undangan Baru</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Pasangan</th>
+                <th>Slug</th>
+                <th>Status</th>
+                <th>Templat</th>
+                <th>Tindakan</th>
+              </tr>
+            </thead>
+            <tbody id="invitations-table"></tbody>
+          </table>
+        </div>
+      </main>
+
+      <!-- RSVPs Tab -->
+      <main class="content" id="tab-rsvps" hidden>
+        <div class="page-header">
+          <h2 class="page-title">Semua RSVP</h2>
+          <input type="search" class="search-input" placeholder="Cari nama atau telefon..." id="rsvp-search" />
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr><th>Nama</th><th>Telefon</th><th>Undangan</th><th>Status</th><th>Tarikh</th></tr>
+            </thead>
+            <tbody id="rsvps-table"></tbody>
+          </table>
+        </div>
+      </main>
+
+      <!-- Templates Tab -->
+      <main class="content" id="tab-templates" hidden>
+        <div class="page-header">
+          <h2 class="page-title">Templat</h2>
+        </div>
+        <div class="template-admin-grid" id="templates-grid"></div>
+      </main>
+    </div>
+
+    <!-- New Invitation Modal -->
+    <div class="modal-overlay" id="invitation-modal" hidden>
+      <div class="modal-card">
+        <button class="modal-close" id="modal-close">&times;</button>
+        <h3 class="modal-title">Undangan Baru</h3>
+        <form id="new-invitation-form" class="modal-form">
+          <div class="form-row">
+            <label class="form-field"><span class="form-label">Nama (P. Perempuan)</span><input type="text" name="couple_name_1" class="form-input" required /></label>
+            <label class="form-field"><span class="form-label">Nama (P. Lelaki)</span><input type="text" name="couple_name_2" class="form-input" required /></label>
+          </div>
+          <label class="form-field"><span class="form-label">Slug</span><input type="text" name="slug" class="form-input" required placeholder="nurul-dan-afiq" /></label>
+          <label class="form-field"><span class="form-label">Templat</span>
+            <select name="template" class="form-input">
+              <option value="living-songket-manuscript">Living Songket Manuscript</option>
+              <option value="minimal-ivory">Minimal Ivory</option>
+              <option value="royal-maroon">Royal Maroon</option>
+            </select>
+          </label>
+          <div class="form-row">
+            <label class="form-field"><span class="form-label">Tarikh Acara</span><input type="datetime-local" name="event_date" class="form-input" required /></label>
+            <label class="form-field"><span class="form-label">Venue</span><input type="text" name="venue" class="form-input" /></label>
+          </div>
+          <label class="form-field"><span class="form-label">ID Pesanan</span><input type="text" name="order_id" class="form-input" required placeholder="ORD-2026-XXX" /></label>
+          <button type="submit" class="btn-submit">Cipta Undangan</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // ========== AUTH ==========
+      const loginScreen = document.getElementById('login-screen')!;
+      const dashboardScreen = document.getElementById('dashboard-screen')!;
+      const loginForm = document.getElementById('login-form') as HTMLFormElement;
+      const loginError = document.getElementById('login-error')!;
+      const logoutBtn = document.getElementById('logout-btn')!;
+
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const fd = new FormData(loginForm);
+        if (fd.get('username') === 'admin' && fd.get('password') === 'pancatz2026') {
+          loginScreen.hidden = true;
+          dashboardScreen.hidden = false;
+          renderAll();
+        } else {
+          loginError.textContent = 'Nama pengguna atau kata laluan tidak sah.';
+          loginError.hidden = false;
+        }
+      });
+
+      logoutBtn.addEventListener('click', () => {
+        dashboardScreen.hidden = true;
+        loginScreen.hidden = false;
+        loginForm.reset();
+      });
+
+      // ========== TAB SWITCHING ==========
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          const target = tab.getAttribute('data-tab')!;
+          document.querySelectorAll('.content').forEach(c => { (c as HTMLElement).hidden = c.id !== `tab-${target}`; });
+        });
+      });
+
+      // ========== MOCK DATA ==========
+      const invitations = [
+        { id:'mock-001', slug:'nurul-dan-afiq', status:'published', template:'living-songket-manuscript', couple:'Nurul & Afiq', event:'2026-12-12T11:00', venue:'Dewan Seri Melati', order_id:'ORD-2026-001' },
+        { id:'mock-002', slug:'aisyah-dan-hakim', status:'draft', template:'minimal-ivory', couple:'Aisyah & Hakim', event:'2027-01-15T14:00', venue:'Dewan Perdana', order_id:'ORD-2026-002' },
+        { id:'mock-003', slug:'fatimah-dan-zikri', status:'published', template:'royal-maroon', couple:'Fatimah & Zikri', event:'2026-11-20T10:00', venue:'Masjid Wilayah', order_id:'ORD-2026-003' },
+      ];
+
+      const rsvps = [
+        { guest_name:'Ali Ahmad', telephone:'0123456789', invitation:'nurul-dan-afiq', attendance:'attending', date:'2026-08-04' },
+        { guest_name:'Siti Nurhaliza', telephone:'0198765432', invitation:'nurul-dan-afiq', attendance:'attending', date:'2026-08-03' },
+        { guest_name:'Ahmad Faizal', telephone:'0134567890', invitation:'fatimah-dan-zikri', attendance:'not_attending', date:'2026-08-02' },
+      ];
+
+      const templates = [
+        { id:'living-songket-manuscript', name:'Living Songket', enabled:true, colors:['#071D18','#D9B867','#174D3D'] },
+        { id:'minimal-ivory', name:'Ivory Minimal', enabled:true, colors:['#FAF7F0','#2D2D2D','#8FA98A'] },
+        { id:'royal-maroon', name:'Royal Maroon', enabled:true, colors:['#4A0E17','#C77D4B','#F5ECD7'] },
+      ];
+
+      function renderAll() {
+        renderInvitations();
+        renderRsvps();
+        renderTemplates();
+        document.getElementById('total-rsvps')!.textContent = String(rsvps.length);
+      }
+
+      function renderInvitations() {
+        const tbody = document.getElementById('invitations-table')!;
+        tbody.innerHTML = invitations.map(inv => `
+          <tr>
+            <td><strong>${inv.couple}</strong></td>
+            <td><code>${inv.slug}</code></td>
+            <td><span class="badge badge-${inv.status}">${inv.status === 'published' ? 'Diterbitkan' : 'Draf'}</span></td>
+            <td>${inv.template}</td>
+            <td class="actions">
+              <a href="/${inv.slug}" target="_blank" class="action-link">Lihat</a>
+              <a href="/api/qr?slug=${inv.slug}" target="_blank" class="action-link">QR</a>
+              <button class="action-btn" data-action="${inv.status === 'published' ? 'archive' : 'publish'}" data-id="${inv.id}">${inv.status === 'published' ? 'Arkib' : 'Terbit'}</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      function renderRsvps() {
+        const tbody = document.getElementById('rsvps-table')!;
+        tbody.innerHTML = rsvps.map(r => `
+          <tr>
+            <td>${r.guest_name}</td>
+            <td>${r.telephone}</td>
+            <td>${r.invitation}</td>
+            <td><span class="badge badge-${r.attendance === 'attending' ? 'published' : 'draft'}">${r.attendance === 'attending' ? 'Hadir' : 'Tidak Hadir'}</span></td>
+            <td>${r.date}</td>
+          </tr>
+        `).join('');
+
+        document.getElementById('rsvp-search')?.addEventListener('input', (e) => {
+          const q = (e.target as HTMLInputElement).value.toLowerCase();
+          document.querySelectorAll('#rsvps-table tr').forEach(row => {
+            (row as HTMLElement).hidden = q !== '' && !row.textContent!.toLowerCase().includes(q);
+          });
+        });
+      }
+
+      function renderTemplates() {
+        const grid = document.getElementById('templates-grid')!;
+        grid.innerHTML = templates.map(t => `
+          <div class="template-admin-card">
+            <div class="tac-preview" style="background:${t.colors[0]}"><span>${t.name}</span></div>
+            <div class="tac-body">
+              <strong>${t.name}</strong>
+              <div class="tac-palette">${t.colors.map(c => `<span class="tac-dot" style="background:${c}"></span>`).join('')}</div>
+              <span class="badge badge-${t.enabled ? 'published' : 'draft'}">${t.enabled ? 'Aktif' : 'Dilumpuhkan'}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // ========== NEW INVITATION MODAL ==========
+      document.getElementById('new-invitation-btn')?.addEventListener('click', () => {
+        document.getElementById('invitation-modal')!.hidden = false;
+      });
+      document.getElementById('modal-close')?.addEventListener('click', () => {
+        document.getElementById('invitation-modal')!.hidden = true;
+      });
+      document.getElementById('new-invitation-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target as HTMLFormElement);
+        const data = Object.fromEntries(fd.entries());
+        invitations.push({
+          id: `new-${Date.now()}`,
+          slug: data.slug as string,
+          status: 'draft',
+          template: data.template as string,
+          couple: `${data.couple_name_1} & ${data.couple_name_2}`,
+          event: data.event_date as string,
+          venue: data.venue as string,
+          order_id: data.order_id as string,
+        });
+        renderInvitations();
+        document.getElementById('invitation-modal')!.hidden = true;
+        (e.target as HTMLFormElement).reset();
+      });
+    </script>
+
+    <style>
+      /* Login */
+      .login-screen {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100dvh;
+        padding: 1.5rem;
+      }
+      .login-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: clamp(2rem, 4vw, 3rem);
+        max-width: 400px;
+        width: 100%;
+      }
+      .login-label {
+        font-family: 'Geist Mono', monospace;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+      .login-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin: 0.5rem 0 1.5rem;
+      }
+      .login-form { display: flex; flex-direction: column; gap: 1rem; }
+      .login-field { display: flex; flex-direction: column; gap: 4px; }
+      .login-field-label {
+        font-family: 'Geist Mono', monospace;
+        font-size: 0.6rem;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+      .login-input {
+        padding: 10px 14px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--ink);
+        font-size: 0.9rem;
+        font-family: 'Geist', sans-serif;
+      }
+      .login-input:focus { outline: none; border-color: var(--primary); }
+      .login-btn {
+        padding: 12px;
+        background: var(--primary);
+        color: var(--canvas);
+        border: none;
+        border-radius: 12px;
+        font-family: 'Geist', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      .login-error { font-size: 0.8rem; color: var(--accent); text-align: center; margin-top: 0.5rem; }
+
+      /* Dashboard */
+      .dashboard { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+      .nav {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 1.5rem 0;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .nav-brand { display: flex; align-items: baseline; gap: 0.75rem; }
+      .nav-logo {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary);
+      }
+      .nav-sub { font-size: 0.75rem; color: var(--muted); }
+      .nav-tabs { display: flex; gap: 4px; }
+      .nav-tab {
+        background: none;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        color: var(--muted);
+        font-family: 'Geist', sans-serif;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .nav-tab:hover { background: var(--surface); }
+      .nav-tab.active { background: var(--surface); color: var(--ink); }
+      .nav-logout {
+        background: none;
+        border: 1px solid var(--border);
+        padding: 6px 14px;
+        border-radius: 8px;
+        color: var(--muted);
+        font-family: 'Geist', sans-serif;
+        font-size: 0.8rem;
+        cursor: pointer;
+      }
+      .nav-logout:hover { color: var(--accent); border-color: var(--accent); }
+
+      .page-header {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap; gap: 1rem;
+      }
+      .page-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .btn-action {
+        padding: 10px 20px;
+        background: var(--primary);
+        color: var(--canvas);
+        border: none;
+        border-radius: 10px;
+        font-family: 'Geist', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      /* Stats */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+      }
+      .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+      }
+      .stat-num {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        display: block;
+      }
+      .stat-label {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      /* Tables */
+      .table-wrap { overflow-x: auto; }
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      .data-table th {
+        text-align: left;
+        padding: 12px 16px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 0.65rem;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border);
+      }
+      .data-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(240,237,232,0.04);
+      }
+      .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+      }
+      .badge-published { background: rgba(200,255,0,0.1); color: var(--primary); }
+      .badge-draft { background: rgba(184,178,170,0.1); color: var(--muted); }
+      .actions { display: flex; gap: 8px; }
+      .action-link {
+        color: var(--primary);
+        font-size: 0.8rem;
+        text-decoration: none;
+      }
+      .action-btn {
+        background: none;
+        border: 1px solid var(--border);
+        padding: 4px 10px;
+        border-radius: 6px;
+        color: var(--muted);
+        font-family: 'Geist', sans-serif;
+        font-size: 0.75rem;
+        cursor: pointer;
+      }
+
+      /* Search */
+      .search-input {
+        padding: 10px 14px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--ink);
+        font-size: 0.85rem;
+        font-family: inherit;
+        min-width: 240px;
+      }
+      .search-input:focus { outline: none; border-color: var(--primary); }
+
+      /* Templates */
+      .template-admin-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+      }
+      .template-admin-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+      .tac-preview {
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.25rem;
+        color: rgba(255,255,255,0.8);
+      }
+      .tac-body { padding: 1rem; }
+      .tac-body strong { display: block; margin-bottom: 0.5rem; }
+      .tac-palette { display: flex; gap: 6px; margin-bottom: 0.5rem; }
+      .tac-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed; inset: 0;
+        background: rgba(10,10,10,0.9);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 500;
+        padding: 1rem;
+      }
+      .modal-overlay[hidden] { display: none; }
+      .modal-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 560px;
+        width: 100%;
+        position: relative;
+      }
+      .modal-close {
+        position: absolute; top: 1rem; right: 1rem;
+        background: none; border: none;
+        color: var(--muted); font-size: 1.5rem;
+        cursor: pointer;
+      }
+      .modal-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem; font-weight: 700;
+        margin-bottom: 1.5rem;
+      }
+      .modal-form { display: flex; flex-direction: column; gap: 1rem; }
+      .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+      .form-field { display: flex; flex-direction: column; gap: 4px; }
+      .form-label {
+        font-family: 'Geist Mono', monospace;
+        font-size: 0.6rem;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+      .form-input {
+        padding: 10px 12px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--ink);
+        font-size: 0.9rem;
+        font-family: 'Geist', sans-serif;
+      }
+      .form-input:focus { outline: none; border-color: var(--primary); }
+      .btn-submit {
+        padding: 12px;
+        background: var(--primary);
+        color: var(--canvas);
+        border: none;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+
+      @media (max-width: 640px) {
+        .nav { justify-content: center; }
+        .form-row { grid-template-columns: 1fr; }
+        .stats-grid { grid-template-columns: 1fr 1fr; }
+      }
+    </style>
+  </body>
+</html>

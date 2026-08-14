@@ -1,0 +1,131 @@
+---
+/**
+ * src/components/templates/songket/DressCode.astro
+ * Dress code theme information with circular color swatch previews.
+ */
+import type { Invitation } from '../../../lib/directus';
+
+interface Props {
+  inv: Invitation;
+}
+
+const { inv } = Astro.props;
+const palette = inv.dress_code_palette ?? [];
+---
+
+{inv.feature_flags?.dressCode !== false && (inv.dress_code || palette.length > 0) && (
+  <section class="dress-code section-reveal" aria-label="Tema Kod Pakaian">
+    <div class="dress-inner">
+      <p class="dress-label">Warna Tema</p>
+      <h2 class="dress-heading">Kod Pakaian</h2>
+
+      {inv.dress_code && (
+        <p class="dress-text">{inv.dress_code}</p>
+      )}
+
+      {palette.length > 0 && (
+        <div class="swatches stagger-reveal" role="list" aria-label="Senarai warna tema majlis">
+          {palette.map((swatch: { name: string; hex: string }) => (
+            <div class="swatch-item stagger-child" role="listitem">
+              <span
+                class="swatch-circle"
+                style={`background-color: ${swatch.hex};`}
+                aria-label={`Warna ${swatch.name}`}
+              ></span>
+              <span class="swatch-name">{swatch.name}</span>
+              <span class="swatch-hex">{swatch.hex}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+)}
+
+<style>
+  .dress-code {
+    padding: clamp(3.5rem, 8vw, 6rem) 1.5rem;
+    background: var(--deep-green);
+    text-align: center;
+  }
+
+  .dress-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+  }
+
+  .dress-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--antique-gold);
+  }
+
+  .dress-heading {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    color: var(--ivory);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .dress-text {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(0.88rem, 2.5vw, 1rem);
+    color: var(--muted);
+    line-height: 1.75;
+    max-width: 58ch;
+    text-align: center;
+  }
+
+  /* Swatches */
+  .swatches {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem 2rem;
+    margin-top: 0.75rem;
+  }
+
+  .swatch-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .swatch-circle {
+    display: block;
+    width: clamp(52px, 10vw, 70px);
+    height: clamp(52px, 10vw, 70px);
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .swatch-circle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  }
+
+  .swatch-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 0.95rem;
+    color: var(--ivory);
+    font-weight: 600;
+  }
+
+  .swatch-hex {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+</style>

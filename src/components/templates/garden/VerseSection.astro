@@ -1,0 +1,113 @@
+---
+/**
+ * VerseSection.astro — Full-screen quote panel (Layout C: Ethereal Garden)
+ */
+export interface Props {
+  verse?: string;
+}
+
+const { verse } = Astro.props;
+if (!verse) return;
+
+const lines = verse.split('\n');
+const quoteText = lines.slice(0, -1).join('\n');
+const attribution = lines[lines.length - 1]?.startsWith('—') ? lines[lines.length - 1] : null;
+---
+
+<section class="garden-panel garden-verse" id="verse" aria-label="Ayat Mulia">
+  <img class="garden-verse__sprig garden-verse__sprig--top" src="/botanicals/divider-sprig.svg" alt="" aria-hidden="true" />
+
+  <div class="garden-verse__inner">
+    <span class="garden-verse__mark garden-verse__mark--open" aria-hidden="true">&ldquo;</span>
+    <blockquote class="garden-verse__quote">
+      <p>{quoteText || verse}</p>
+      {attribution && <footer class="garden-verse__attr">{attribution}</footer>}
+    </blockquote>
+    <span class="garden-verse__mark garden-verse__mark--close" aria-hidden="true">&rdquo;</span>
+  </div>
+
+  <img class="garden-verse__sprig garden-verse__sprig--bottom" src="/botanicals/divider-sprig.svg" alt="" aria-hidden="true" />
+</section>
+
+<style>
+  .garden-verse {
+    background: linear-gradient(160deg, #FDF8F0 0%, #F0EAE0 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    height: 100dvh;
+    min-height: 100dvh;
+    padding: 1.5rem;
+    box-sizing: border-box;
+  }
+
+  .garden-verse__sprig {
+    width: clamp(90px, 22vw, 180px);
+    opacity: 0.55;
+    flex-shrink: 0;
+  }
+
+  .garden-verse__sprig--top {
+    margin-bottom: clamp(0.6rem, 2vh, 1.2rem);
+  }
+
+  .garden-verse__sprig--bottom {
+    margin-top: clamp(0.6rem, 2vh, 1.2rem);
+    transform: scaleY(-1);
+  }
+
+  .garden-verse__inner {
+    position: relative;
+    max-width: 540px;
+    width: 100%;
+    text-align: center;
+    padding: 0 0.5rem;
+  }
+
+  .garden-verse__mark {
+    display: block;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(3rem, 9vw, 5.5rem);
+    color: #8FA98A;
+    line-height: 0.5;
+    opacity: 0.45;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .garden-verse__mark--open {
+    text-align: left;
+    margin-bottom: -0.2rem;
+  }
+
+  .garden-verse__mark--close {
+    text-align: right;
+    margin-top: -0.2rem;
+  }
+
+  .garden-verse__quote {
+    margin: 0;
+    padding: 0;
+  }
+
+  .garden-verse__quote p {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1rem, 2.4vw, 1.3rem);
+    color: #3D3D3D;
+    line-height: 1.8;
+    margin: 0 0 0.8rem;
+    font-weight: 500;
+  }
+
+  .garden-verse__attr {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(0.78rem, 1.8vw, 0.88rem);
+    color: #5C7A54;
+    letter-spacing: 0.06em;
+    font-style: normal;
+  }
+</style>

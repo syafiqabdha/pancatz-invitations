@@ -1,0 +1,213 @@
+---
+/**
+ * Cover.astro — Full-screen botanical cover panel (Layout C: Ethereal Garden)
+ */
+export interface Props {
+  bismillah?: string;
+  coupleName1: string;
+  coupleName2: string;
+  eventDate: string;
+}
+
+const { bismillah, coupleName1, coupleName2, eventDate } = Astro.props;
+---
+
+<section class="garden-panel garden-cover" id="cover" aria-label="Skrin Utama">
+  <!-- Subtle botanical petal background -->
+  <div class="garden-cover__petals" aria-hidden="true">
+    <img src="/botanicals/petals.svg" alt="" role="presentation" loading="eager" />
+  </div>
+
+  <!-- Botanical corner ornaments -->
+  <img class="garden-cover__corner garden-cover__corner--tl" src="/botanicals/corner-rose.svg" alt="" aria-hidden="true" />
+  <img class="garden-cover__corner garden-cover__corner--br" src="/botanicals/corner-rose.svg" alt="" aria-hidden="true" />
+
+  <!-- Main Cover Content -->
+  <div class="garden-cover__inner">
+    {bismillah && (
+      <p class="garden-cover__bismillah" lang="ar" dir="auto">{bismillah.split('\n')[0]}</p>
+    )}
+    
+    <div class="garden-cover__header-badge">
+      <span class="garden-cover__badge-text">WALIMATULURUS</span>
+    </div>
+
+    <h1 class="garden-cover__names">
+      <span class="garden-cover__name">{coupleName1}</span>
+      <span class="garden-cover__ampersand">&amp;</span>
+      <span class="garden-cover__name">{coupleName2}</span>
+    </h1>
+
+    <p class="garden-cover__date">{eventDate}</p>
+
+    <button class="garden-cover__btn" id="garden-open-btn" type="button" aria-label="Buka Jemputan Perkahwinan">
+      <span class="garden-cover__btn-text">Buka Undangan</span>
+      <svg class="garden-cover__btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 5v14M19 12l-7 7-7-7"/>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<style>
+  .garden-cover {
+    position: relative;
+    overflow: hidden;
+    background: #FDF8F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100dvh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+  }
+
+  .garden-cover__petals {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .garden-cover__petals img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.35;
+  }
+
+  .garden-cover__corner {
+    position: absolute;
+    width: clamp(70px, 14vw, 130px);
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .garden-cover__corner--tl {
+    top: 0;
+    left: 0;
+  }
+
+  .garden-cover__corner--br {
+    bottom: 0;
+    right: 0;
+    transform: rotate(180deg);
+  }
+
+  .garden-cover__inner {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.75rem, 2.5vh, 1.4rem);
+    max-width: 480px;
+    width: 100%;
+  }
+
+  .garden-cover__bismillah {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(0.85rem, 2vw, 1.05rem);
+    color: #5C7A54;
+    letter-spacing: 0.04em;
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  .garden-cover__header-badge {
+    display: inline-block;
+    padding: 0.25em 1em;
+    border-radius: 999px;
+    background: rgba(143, 169, 138, 0.15);
+    border: 1px solid rgba(143, 169, 138, 0.35);
+  }
+
+  .garden-cover__badge-text {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(0.68rem, 1.6vw, 0.78rem);
+    letter-spacing: 0.2em;
+    color: #5C7A54;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .garden-cover__names {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15em;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(2.4rem, 7.5vw, 4.4rem);
+    color: #3D3D3D;
+    line-height: 1.05;
+    margin: 0;
+    letter-spacing: 0.01em;
+  }
+
+  .garden-cover__name {
+    display: inline-block;
+  }
+
+  .garden-cover__ampersand {
+    font-size: 0.5em;
+    color: #8FA98A;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 0.8;
+  }
+
+  .garden-cover__date {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.05rem, 2.8vw, 1.35rem);
+    color: #8FA98A;
+    letter-spacing: 0.06em;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .garden-cover__btn {
+    margin-top: 0.6rem;
+    padding: 0.75em 2.2em;
+    border: 1.5px solid #8FA98A;
+    border-radius: 999px;
+    background: #FDF8F0;
+    color: #5C7A54;
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(0.88rem, 2vw, 0.98rem);
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    box-shadow: 0 4px 16px rgba(92, 122, 84, 0.12);
+    transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .garden-cover__btn:hover,
+  .garden-cover__btn:focus-visible {
+    background: #5C7A54;
+    color: #FDF8F0;
+    border-color: #5C7A54;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(92, 122, 84, 0.22);
+    outline: none;
+  }
+
+  .garden-cover__btn-icon {
+    transition: transform 0.2s ease;
+  }
+
+  .garden-cover__btn:hover .garden-cover__btn-icon {
+    transform: translateY(2px);
+  }
+</style>

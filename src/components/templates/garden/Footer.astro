@@ -1,0 +1,218 @@
+---
+/**
+ * Footer.astro — Full-screen footer panel with botanical mark (Layout C: Ethereal Garden)
+ */
+export interface Props {
+  contactName?: string;
+  contactPhone?: string;
+  coupleName1: string;
+  coupleName2: string;
+}
+
+const { contactName, contactPhone, coupleName1, coupleName2 } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="garden-panel garden-footer" id="footer" aria-label="Penutup">
+  <img class="garden-footer__garland" src="/botanicals/garland-top.svg" alt="" aria-hidden="true" />
+
+  <div class="garden-footer__inner">
+    <div class="garden-footer__names">
+      <span>{coupleName1}</span>
+      <span class="garden-footer__heart" aria-hidden="true">♡</span>
+      <span>{coupleName2}</span>
+    </div>
+
+    <img class="garden-footer__wreath" src="/botanicals/wreath.svg" alt="" aria-hidden="true" />
+
+    <div class="garden-footer__rsvp-cta">
+      <button class="garden-footer__rsvp-btn garden-rsvp-trigger" type="button">
+        <span>💌 Send RSVP</span>
+      </button>
+    </div>
+
+    {(contactName || contactPhone) && (
+      <div class="garden-footer__contact">
+        <p class="garden-footer__contact-label">Sebarang Pertanyaan:</p>
+        {contactName && <p class="garden-footer__contact-name">{contactName}</p>}
+        {contactPhone && (
+          <a class="garden-footer__contact-phone" href={`tel:${contactPhone.replace(/\s/g, '')}`}>
+            {contactPhone}
+          </a>
+        )}
+      </div>
+    )}
+
+    <div class="garden-footer__brand">
+      <img class="garden-footer__brand-mark" src="/botanicals/divider-sprig.svg" alt="" aria-hidden="true" />
+      <p class="garden-footer__brand-text">
+        Dijana dengan ♡ oleh <a class="garden-footer__brand-link" href="https://pancatz.com" target="_blank" rel="noopener">Pancatz</a>
+      </p>
+      <p class="garden-footer__year">&copy; {year} · Hak Cipta Terpelihara</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .garden-footer {
+    background: linear-gradient(170deg, #F5ECD7 0%, #FDF8F0 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    height: 100dvh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+  }
+
+  .garden-footer__garland {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(200px, 50vw, 380px);
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .garden-footer__inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.6rem, 1.8vh, 1.2rem);
+    max-width: 440px;
+    width: 100%;
+  }
+
+  .garden-footer__names {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    color: #3D3D3D;
+    display: flex;
+    align-items: center;
+    gap: 0.35em;
+    font-weight: 600;
+  }
+
+  .garden-footer__heart {
+    color: #C4988A;
+    font-size: 0.75em;
+  }
+
+  .garden-footer__wreath {
+    width: clamp(60px, 15vw, 90px);
+    opacity: 0.5;
+    animation: garden-footer-spin 70s linear infinite;
+  }
+
+  @keyframes garden-footer-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .garden-footer__wreath { animation: none; }
+  }
+
+  .garden-footer__rsvp-cta {
+    margin: 0.1rem 0;
+  }
+
+  .garden-footer__rsvp-btn {
+    padding: 0.65em 1.8em;
+    border: none;
+    border-radius: 999px;
+    background: #5C7A54;
+    color: #FDF8F0;
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(0.84rem, 1.8vw, 0.94rem);
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    box-shadow: 0 4px 14px rgba(92, 122, 84, 0.25);
+    transition: background-color 0.2s, transform 0.18s;
+  }
+
+  .garden-footer__rsvp-btn:hover,
+  .garden-footer__rsvp-btn:focus-visible {
+    background: #4E6A47;
+    transform: translateY(-2px);
+    outline: none;
+  }
+
+  .garden-footer__contact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  .garden-footer__contact-label {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #888888;
+    margin: 0;
+  }
+
+  .garden-footer__contact-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: #3D3D3D;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .garden-footer__contact-phone {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.88rem;
+    color: #5C7A54;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .garden-footer__contact-phone:hover { opacity: 0.75; }
+
+  .garden-footer__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.2rem;
+  }
+
+  .garden-footer__brand-mark {
+    width: clamp(45px, 10vw, 70px);
+    opacity: 0.45;
+  }
+
+  .garden-footer__brand-text {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.76rem;
+    color: #888888;
+    margin: 0;
+  }
+
+  .garden-footer__brand-link {
+    color: #5C7A54;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .garden-footer__brand-link:hover { text-decoration: underline; }
+
+  .garden-footer__year {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.68rem;
+    color: #AAAAAA;
+    margin: 0;
+  }
+</style>

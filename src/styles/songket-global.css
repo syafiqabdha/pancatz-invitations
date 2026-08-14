@@ -1,0 +1,64 @@
+/* ── Songket Manuscript — Design Tokens & Global Styles ── */
+:root {
+  --midnight:    #071D18;
+  --deep-green:  #0B2B23;
+  --jade:        #174D3D;
+  --light-jade:  #2C6A54;
+  --antique-gold:#D9B867;
+  --light-gold:  #F1D993;
+  --ivory:       #F7F0DF;
+  --paper:       #EADFC7;
+  --muted:       #B8C8BE;
+  --rose:        #B77B71;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--midnight);
+  color: var(--ivory);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100dvh;
+  overflow-x: hidden;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--midnight);
+  color: var(--ivory);
+}
+
+/* Main content initial hidden state before cover is opened */
+#main-content {
+  visibility: hidden;
+  opacity: 0;
+}
+
+/* noscript fallback */
+.no-js #cover {
+  display: none !important;
+}
+
+.no-js #main-content {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  html {
+    scroll-behavior: auto !important;
+  }
+}

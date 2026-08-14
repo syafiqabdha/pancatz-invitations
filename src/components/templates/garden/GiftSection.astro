@@ -1,0 +1,255 @@
+---
+/**
+ * GiftSection.astro — Full-screen gift panel with floral corner ornaments (Layout C: Ethereal Garden)
+ */
+export interface Props {
+  giftEnabled: boolean;
+  giftDetails?: string;
+  qrCode?: string;
+}
+
+const { giftEnabled, giftDetails, qrCode } = Astro.props;
+if (!giftEnabled) return;
+
+const bankAccount = '1234 5678 9012';
+---
+
+<section class="garden-panel garden-gift" id="gift" aria-label="Hadiah">
+  <img class="garden-gift__corner garden-gift__corner--tl" src="/botanicals/corner-rose.svg" alt="" aria-hidden="true" />
+  <img class="garden-gift__corner garden-gift__corner--br" src="/botanicals/corner-rose.svg" alt="" aria-hidden="true" />
+
+  <div class="garden-gift__inner">
+    <div class="garden-gift__header">
+      <h2 class="garden-gift__title">Hadiah Kasih Sayang</h2>
+      <img class="garden-gift__sprig" src="/botanicals/divider-sprig.svg" alt="" aria-hidden="true" />
+    </div>
+
+    {giftDetails && <p class="garden-gift__note">{giftDetails}</p>}
+
+    <!-- Gift Card -->
+    <div class="garden-gift__card">
+      {qrCode ? (
+        <div class="garden-gift__qr-wrap">
+          <img class="garden-gift__qr" src={qrCode} alt="QR DuitNow" />
+        </div>
+      ) : (
+        <div class="garden-gift__qr-placeholder" aria-hidden="true">
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="70" height="70">
+            <rect x="2" y="2" width="30" height="30" rx="4" stroke="#8FA98A" stroke-width="2.5" fill="none"/>
+            <rect x="10" y="10" width="14" height="14" rx="2" fill="#8FA98A" opacity="0.45"/>
+            <rect x="48" y="2" width="30" height="30" rx="4" stroke="#8FA98A" stroke-width="2.5" fill="none"/>
+            <rect x="56" y="10" width="14" height="14" rx="2" fill="#8FA98A" opacity="0.45"/>
+            <rect x="2" y="48" width="30" height="30" rx="4" stroke="#8FA98A" stroke-width="2.5" fill="none"/>
+            <rect x="10" y="56" width="14" height="14" rx="2" fill="#8FA98A" opacity="0.45"/>
+            <rect x="48" y="48" width="6" height="6" rx="1" fill="#8FA98A" opacity="0.45"/>
+            <rect x="60" y="48" width="6" height="6" rx="1" fill="#8FA98A" opacity="0.45"/>
+            <rect x="72" y="48" width="6" height="6" rx="1" fill="#8FA98A" opacity="0.45"/>
+            <rect x="48" y="60" width="6" height="6" rx="1" fill="#8FA98A" opacity="0.45"/>
+            <rect x="60" y="72" width="6" height="6" rx="1" fill="#8FA98A" opacity="0.45"/>
+            <rect x="72" y="72" width="6" height="6" rx="1" fill="#8FA98A" opacity="0.45"/>
+          </svg>
+          <p class="garden-gift__qr-hint">QR DuitNow / Akaun Bank</p>
+        </div>
+      )}
+
+      <div class="garden-gift__bank">
+        <p class="garden-gift__bank-label">Maybank</p>
+        <p class="garden-gift__bank-num" id="garden-bank-num">{bankAccount}</p>
+        <button
+          class="garden-gift__copy-btn"
+          id="garden-copy-btn"
+          type="button"
+          data-copy={bankAccount}
+          aria-label="Salin nombor akaun"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          <span class="garden-gift__copy-text">Salin Nombor</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const copyBtn = document.getElementById('garden-copy-btn') as HTMLButtonElement | null;
+  const copyText = copyBtn?.querySelector('.garden-gift__copy-text') as HTMLSpanElement | null;
+
+  copyBtn?.addEventListener('click', async () => {
+    const text = copyBtn.dataset.copy ?? '';
+    try {
+      await navigator.clipboard.writeText(text);
+      if (copyText) copyText.textContent = 'Disalin ✓';
+      copyBtn.classList.add('garden-gift__copy-btn--done');
+      setTimeout(() => {
+        if (copyText) copyText.textContent = 'Salin Nombor';
+        copyBtn.classList.remove('garden-gift__copy-btn--done');
+      }, 2500);
+    } catch {
+      if (copyText) copyText.textContent = 'Gagal';
+    }
+  });
+</script>
+
+<style>
+  .garden-gift {
+    background: #FDF8F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    height: 100dvh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+  }
+
+  .garden-gift__corner {
+    position: absolute;
+    width: clamp(60px, 12vw, 110px);
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .garden-gift__corner--tl { top: 0; left: 0; }
+  .garden-gift__corner--br { bottom: 0; right: 0; transform: scale(-1); }
+
+  .garden-gift__inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 1.5rem clamp(1rem, 6vw, 2.5rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.6rem, 1.8vh, 1.1rem);
+    max-width: 440px;
+    width: 100%;
+  }
+
+  .garden-gift__header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .garden-gift__title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.4rem, 3.8vw, 2.1rem);
+    color: #5C7A54;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .garden-gift__sprig {
+    width: clamp(60px, 14vw, 110px);
+    opacity: 0.55;
+  }
+
+  .garden-gift__note {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(0.8rem, 1.8vw, 0.9rem);
+    color: #888888;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 380px;
+  }
+
+  .garden-gift__card {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(143, 169, 138, 0.3);
+    border-radius: 20px;
+    padding: clamp(1rem, 3vw, 1.5rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(92, 122, 84, 0.08);
+  }
+
+  .garden-gift__qr-wrap {
+    width: 110px;
+    height: 110px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .garden-gift__qr { width: 100%; height: 100%; object-fit: contain; }
+
+  .garden-gift__qr-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .garden-gift__qr-hint {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.72rem;
+    color: #8FA98A;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .garden-gift__bank {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .garden-gift__bank-label {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #888888;
+    margin: 0;
+  }
+
+  .garden-gift__bank-num {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(1.15rem, 3vw, 1.45rem);
+    color: #3D3D3D;
+    letter-spacing: 0.06em;
+    margin: 0;
+  }
+
+  .garden-gift__copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.45em 1.3em;
+    border: 1.5px solid #8FA98A;
+    border-radius: 999px;
+    background: transparent;
+    color: #5C7A54;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  .garden-gift__copy-btn:hover,
+  .garden-gift__copy-btn:focus-visible {
+    background: #8FA98A;
+    color: #FDF8F0;
+    outline: none;
+  }
+
+  .garden-gift__copy-btn--done {
+    background: #5C7A54;
+    color: #FDF8F0;
+    border-color: #5C7A54;
+  }
+</style>

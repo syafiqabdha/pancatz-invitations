@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <!-- Corner songket ornament — flipped for top-right / bottom-left -->
+  <path d="M120,0 L0,0 L120,120 Z" fill="#0B2B23" fill-opacity="0.3"/>
+  <path d="M120,0 L20,0" stroke="#D9B867" stroke-width="0.8" stroke-opacity="0.7"/>
+  <path d="M120,0 L120,100" stroke="#D9B867" stroke-width="0.8" stroke-opacity="0.7"/>
+  <g transform="translate(110,10)" stroke="#D9B867" stroke-opacity="0.7" fill="none">
+    <circle r="16" stroke-width="0.6"/>
+    <circle r="10" stroke-width="0.5"/>
+    <path d="M0,-10 L3,-3 L10,-3 L5,1 L7,8 L0,4 L-7,8 L-5,1 L-10,-3 L-3,-3 Z" stroke-width="0.5"/>
+    <circle r="3" fill="#D9B867" fill-opacity="0.5" stroke-width="0"/>
+    <path d="M-16,0 Q-28,8 -24,24" stroke-width="0.5" stroke-dasharray="2 2"/>
+    <path d="M0,16 Q-8,28 -24,24" stroke-width="0.5" stroke-dasharray="2 2"/>
+    <path d="M-24,8 L-28,12 L-24,16 L-20,12 Z" stroke-width="0.5"/>
+    <path d="M-8,24 L-12,28 L-8,32 L-4,28 Z" stroke-width="0.5"/>
+  </g>
+  <circle cx="110" cy="10" r="2" fill="#F1D993" fill-opacity="0.7"/>
+</svg>

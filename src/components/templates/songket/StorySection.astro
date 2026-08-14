@@ -1,0 +1,101 @@
+---
+/**
+ * src/components/templates/songket/StorySection.astro
+ * Story section with left-aligned editorial prose and a decorative
+ * gold mandala divider underneath.
+ */
+import type { Invitation } from '../../../lib/directus';
+
+interface Props {
+  inv: Invitation;
+}
+
+const { inv } = Astro.props;
+---
+
+{inv.story && (
+  <section class="story section-reveal" aria-label="Kisah Pertemuan Kami">
+    <div class="story-inner">
+      <p class="story-label">Kisah Kami</p>
+      <h2 class="story-heading">Perjalanan Cinta</h2>
+      <p class="story-text">{inv.story}</p>
+    </div>
+
+    <!-- Decorative gold divider from /ornaments/ -->
+    <div class="story-divider" aria-hidden="true">
+      <span class="divider-line"></span>
+      <img
+        src="/ornaments/mandala-divider.svg"
+        alt=""
+        class="divider-ornament"
+        width="48"
+        height="48"
+        loading="lazy"
+      />
+      <span class="divider-line"></span>
+    </div>
+  </section>
+)}
+
+<style>
+  .story {
+    padding: clamp(3.5rem, 8vw, 6rem) clamp(1.5rem, 6vw, 4rem);
+    background: var(--midnight);
+  }
+
+  .story-inner {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .story-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--antique-gold);
+    margin-bottom: 0.6rem;
+  }
+
+  .story-heading {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    color: var(--ivory);
+    font-weight: 600;
+    margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+    line-height: 1.2;
+  }
+
+  .story-text {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(0.92rem, 2.5vw, 1.05rem);
+    line-height: 1.85;
+    color: var(--muted);
+    max-width: 62ch;
+  }
+
+  /* Divider */
+  .story-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: clamp(2.5rem, 6vw, 4.5rem);
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--light-jade), transparent);
+  }
+
+  .divider-ornament {
+    flex-shrink: 0;
+    opacity: 0.7;
+    filter: brightness(0) saturate(100%) invert(76%) sepia(43%) saturate(480%)
+      hue-rotate(5deg) brightness(95%);
+  }
+</style>

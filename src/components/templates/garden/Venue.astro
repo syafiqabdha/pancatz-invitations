@@ -1,0 +1,190 @@
+---
+/**
+ * Venue.astro — Full-screen venue panel with botanical border (Layout C: Ethereal Garden)
+ */
+export interface Props {
+  venueName?: string;
+  venueAddress?: string;
+  googleMapsUrl?: string;
+  wazeUrl?: string;
+  eventDate: string;
+  eventTime: string;
+}
+
+const { venueName, venueAddress, googleMapsUrl, wazeUrl, eventDate, eventTime } = Astro.props;
+---
+
+<section class="garden-panel garden-venue" id="venue" aria-label="Lokasi Majlis">
+  <!-- Botanical corner frames -->
+  <img class="garden-venue__corner garden-venue__corner--tl" src="/botanicals/corner-rose.svg" alt="" aria-hidden="true" />
+  <img class="garden-venue__corner garden-venue__corner--tr" src="/botanicals/corner-rose.svg" alt="" aria-hidden="true" />
+  <img class="garden-venue__corner garden-venue__corner--bl" src="/botanicals/corner-rose.svg" alt="" aria-hidden="true" />
+  <img class="garden-venue__corner garden-venue__corner--br" src="/botanicals/corner-rose.svg" alt="" aria-hidden="true" />
+
+  <div class="garden-venue__inner">
+    <img class="garden-venue__sprig" src="/botanicals/divider-sprig.svg" alt="" aria-hidden="true" />
+    
+    <div class="garden-venue__header">
+      <h2 class="garden-venue__title">Lokasi Majlis</h2>
+    </div>
+
+    {venueName && <p class="garden-venue__name">{venueName}</p>}
+    {venueAddress && <address class="garden-venue__address">{venueAddress}</address>}
+
+    <div class="garden-venue__datetime">
+      <span class="garden-venue__date">{eventDate}</span>
+      <span class="garden-venue__sep" aria-hidden="true">✦</span>
+      <span class="garden-venue__time">{eventTime}</span>
+    </div>
+
+    <div class="garden-venue__btns">
+      {googleMapsUrl && (
+        <a class="garden-venue__btn garden-venue__btn--maps" href={googleMapsUrl} target="_blank" rel="noopener">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span>Google Maps</span>
+        </a>
+      )}
+      {wazeUrl && (
+        <a class="garden-venue__btn garden-venue__btn--waze" href={wazeUrl} target="_blank" rel="noopener">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 8v4l3 3"/>
+          </svg>
+          <span>Waze</span>
+        </a>
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  .garden-venue {
+    background: #FDF8F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    height: 100dvh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+  }
+
+  .garden-venue__corner {
+    position: absolute;
+    width: clamp(60px, 12vw, 110px);
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .garden-venue__corner--tl { top: 0; left: 0; }
+  .garden-venue__corner--tr { top: 0; right: 0; transform: scaleX(-1); }
+  .garden-venue__corner--bl { bottom: 0; left: 0; transform: scaleY(-1); }
+  .garden-venue__corner--br { bottom: 0; right: 0; transform: scale(-1); }
+
+  .garden-venue__inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 1.5rem clamp(1rem, 8vw, 4rem);
+    max-width: 500px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.6rem, 1.8vh, 1rem);
+  }
+
+  .garden-venue__sprig {
+    width: clamp(70px, 16vw, 130px);
+    opacity: 0.6;
+  }
+
+  .garden-venue__title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.4rem, 3.8vw, 2rem);
+    color: #5C7A54;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .garden-venue__name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(1.15rem, 3vw, 1.55rem);
+    color: #3D3D3D;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .garden-venue__address {
+    font-family: 'Lora', Georgia, serif;
+    font-style: normal;
+    font-size: clamp(0.82rem, 1.8vw, 0.94rem);
+    color: #888888;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 380px;
+  }
+
+  .garden-venue__datetime {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(0.95rem, 2.2vw, 1.15rem);
+    color: #5C7A54;
+    font-weight: 500;
+    margin-top: 0.2rem;
+  }
+
+  .garden-venue__sep {
+    color: #C4988A;
+    font-size: 0.8em;
+  }
+
+  .garden-venue__btns {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 0.4rem;
+  }
+
+  .garden-venue__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.65em 1.5em;
+    border-radius: 999px;
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(0.8rem, 1.8vw, 0.88rem);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  }
+
+  .garden-venue__btn:hover,
+  .garden-venue__btn:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.14);
+    outline: none;
+  }
+
+  .garden-venue__btn--maps {
+    background: #5C7A54;
+    color: #FDF8F0;
+  }
+
+  .garden-venue__btn--waze {
+    background: #E8C4B8;
+    color: #3D3D3D;
+  }
+</style>

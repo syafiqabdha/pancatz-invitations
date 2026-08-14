@@ -1,0 +1,288 @@
+---
+/**
+ * src/pages/index.astro — Songket template showcase / landing
+ */
+---
+
+<!DOCTYPE html>
+<html lang="ms">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pancatz Wedding Invitations — Katalog Tema</title>
+    <meta name="description" content="Pilih tema undangan perkahwinan digital terbaik anda bersama Pancatz." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Inter:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --midnight:    #071D18;
+        --deep-green:  #0B2B23;
+        --antique-gold:#D9B867;
+        --light-gold:  #F1D993;
+        --ivory:       #F7F0DF;
+        --muted:       #B8C8BE;
+      }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { background: var(--midnight); color: var(--ivory); -webkit-font-smoothing: antialiased; }
+      body { min-height: 100dvh; font-family: 'Inter', sans-serif; }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <span class="site-logo">Pancatz</span>
+      <nav class="site-nav">
+        <a href="/dashboard" class="nav-link">Dashboard</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero-section">
+        <p class="hero-label">Undangan Digital Premium</p>
+        <h1 class="hero-title">
+          Pilih Tema<br />
+          <em>Undangan Anda</em>
+        </h1>
+        <p class="hero-desc">
+          Tiga tema eksklusif direka untuk hari yang paling istimewa dalam hidup anda.
+        </p>
+      </section>
+
+      <section class="templates-section" aria-label="Senarai Tema">
+        <div class="templates-grid">
+          <!-- Layout A: Songket Manuscript -->
+          <article class="template-card template-card--featured">
+            <div class="template-preview template-preview--songket">
+              <img src="/ornaments/corner.svg" alt="" aria-hidden="true" class="preview-corner" />
+              <span class="preview-title">Nurul &amp; Afiq</span>
+            </div>
+            <div class="template-info">
+              <span class="template-badge">Layout A</span>
+              <h2 class="template-name">Songket Manuscript</h2>
+              <p class="template-desc">Estetik warisan Melayu klasik dengan warna zamrud dan emas antik dalam gulungan manuskrip moden.</p>
+              <a href="/songket/nurul-dan-afiq" class="template-btn" id="view-songket-btn">
+                Lihat Demo
+              </a>
+            </div>
+          </article>
+
+          <!-- Layout B: Garden (coming soon) -->
+          <article class="template-card template-card--soon">
+            <div class="template-preview template-preview--garden">
+              <span class="preview-title-italic">Akan Datang</span>
+            </div>
+            <div class="template-info">
+              <span class="template-badge template-badge--soon">Layout B</span>
+              <h2 class="template-name">Garden Romance</h2>
+              <p class="template-desc">Tema taman romantik dengan hiasan botanik dan warna pastel yang lembut.</p>
+              <span class="template-btn-disabled">Akan Datang</span>
+            </div>
+          </article>
+
+          <!-- Layout C: Noir (coming soon) -->
+          <article class="template-card template-card--soon">
+            <div class="template-preview template-preview--noir">
+              <span class="preview-title-italic">Akan Datang</span>
+            </div>
+            <div class="template-info">
+              <span class="template-badge template-badge--soon">Layout C</span>
+              <h2 class="template-name">Noir Elegance</h2>
+              <p class="template-desc">Tema mewah hitam dan emas dengan sentuhan kontemporari yang memukau.</p>
+              <span class="template-btn-disabled">Akan Datang</span>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© 2026 Pancatz · Undangan Digital Premium Malaysia</p>
+    </footer>
+
+    <style>
+      /* Header */
+      .site-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem 2rem;
+        border-bottom: 1px solid rgba(184, 200, 190, 0.1);
+      }
+      .site-logo {
+        font-family: 'Cormorant Garamond', serif;
+        font-style: italic;
+        font-size: 1.4rem;
+        color: var(--antique-gold);
+        font-weight: 600;
+      }
+      .nav-link {
+        font-size: 0.8rem;
+        color: var(--muted);
+        text-decoration: none;
+        letter-spacing: 0.08em;
+        transition: color 0.2s;
+      }
+      .nav-link:hover { color: var(--ivory); }
+
+      /* Hero */
+      .hero-section {
+        padding: clamp(3rem, 8vw, 6rem) 2rem;
+        text-align: center;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .hero-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--antique-gold);
+        margin-bottom: 1rem;
+      }
+      .hero-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(2.5rem, 8vw, 4rem);
+        font-weight: 600;
+        color: var(--ivory);
+        line-height: 1.1;
+        margin-bottom: 1rem;
+      }
+      .hero-title em { color: var(--light-gold); }
+      .hero-desc {
+        font-size: 0.9rem;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      /* Templates grid */
+      .templates-section {
+        padding: 0 2rem clamp(3rem, 8vw, 5rem);
+      }
+      .templates-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      /* Card */
+      .template-card {
+        background: var(--deep-green);
+        border: 1px solid rgba(217, 184, 103, 0.15);
+        border-radius: 4px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: border-color 0.3s, transform 0.2s;
+      }
+      .template-card:hover { border-color: rgba(217, 184, 103, 0.4); transform: translateY(-3px); }
+      .template-card--featured { border-color: rgba(217, 184, 103, 0.35); }
+      .template-card--soon { opacity: 0.65; }
+
+      .template-preview {
+        height: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .template-preview--songket { background: #071D18; }
+      .template-preview--garden  { background: #1a2e1a; }
+      .template-preview--noir    { background: #111; }
+
+      .preview-corner {
+        position: absolute;
+        top: 0; left: 0;
+        width: 70px;
+        opacity: 0.6;
+        filter: brightness(0) saturate(100%) invert(76%) sepia(43%) saturate(480%)
+          hue-rotate(5deg) brightness(95%);
+      }
+      .preview-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-style: italic;
+        font-size: 1.5rem;
+        color: var(--ivory);
+        font-weight: 600;
+        position: relative;
+        z-index: 1;
+      }
+      .preview-title-italic {
+        font-family: 'Cormorant Garamond', serif;
+        font-style: italic;
+        font-size: 1.1rem;
+        color: var(--muted);
+      }
+
+      .template-info { padding: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; flex: 1; }
+
+      .template-badge {
+        font-size: 0.62rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--antique-gold);
+        font-weight: 600;
+      }
+      .template-badge--soon { color: var(--muted); }
+
+      .template-name {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.4rem;
+        color: var(--ivory);
+        font-weight: 600;
+        font-style: italic;
+      }
+
+      .template-desc {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.65;
+        flex: 1;
+      }
+
+      .template-btn {
+        display: inline-block;
+        margin-top: 0.5rem;
+        padding: 0.7em 1.6em;
+        background: var(--antique-gold);
+        color: var(--midnight);
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        border-radius: 2px;
+        align-self: flex-start;
+        transition: background 0.2s;
+      }
+      .template-btn:hover { background: var(--light-gold); }
+
+      .template-btn-disabled {
+        display: inline-block;
+        margin-top: 0.5rem;
+        padding: 0.7em 1.6em;
+        background: rgba(184, 200, 190, 0.1);
+        color: var(--muted);
+        font-size: 0.8rem;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        border-radius: 2px;
+        align-self: flex-start;
+        cursor: default;
+      }
+
+      /* Footer */
+      .site-footer {
+        padding: 1.5rem 2rem;
+        border-top: 1px solid rgba(184, 200, 190, 0.08);
+        text-align: center;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+    </style>
+  </body>
+</html>

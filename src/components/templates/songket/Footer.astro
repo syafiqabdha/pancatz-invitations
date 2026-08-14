@@ -1,0 +1,234 @@
+---
+/**
+ * src/components/templates/songket/Footer.astro
+ * Footer with couple names, host contact info, WhatsApp direct link,
+ * scroll-to-top action, and Pancatz branding.
+ */
+import type { Invitation } from '../../../lib/directus';
+
+interface Props {
+  inv: Invitation;
+}
+
+const { inv } = Astro.props;
+
+const phoneDigits = inv.contact_phone ? inv.contact_phone.replace(/[^0-9]/g, '') : '';
+---
+
+<footer class="footer section-reveal" aria-label="Maklumat Perhubungan &amp; Penutup">
+  <!-- Mandala divider from /ornaments/ -->
+  <div class="footer-divider" aria-hidden="true">
+    <span class="divider-line"></span>
+    <img
+      src="/ornaments/mandala-divider.svg"
+      alt=""
+      class="divider-ornament"
+      width="40"
+      height="40"
+      loading="lazy"
+    />
+    <span class="divider-line"></span>
+  </div>
+
+  <div class="footer-inner">
+    <!-- Couple names -->
+    <p class="footer-names">
+      {inv.couple_name_1} <span class="footer-amp">&amp;</span> {inv.couple_name_2}
+    </p>
+
+    <!-- Contact info -->
+    {(inv.contact_name || inv.contact_phone) && (
+      <div class="footer-contact">
+        <p class="footer-contact-label">Sebarang pertanyaan, sila hubungi:</p>
+        {inv.contact_name && (
+          <p class="footer-contact-name">{inv.contact_name}</p>
+        )}
+        {inv.contact_phone && (
+          <a
+            href={`https://wa.me/${phoneDigits}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="footer-phone-link"
+            id="whatsapp-contact-link"
+            aria-label="Hubungi wakil keluarga melalui WhatsApp"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+              <path d="M5.002 21.5L6.89 15.08A9.967 9.967 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10a9.96 9.96 0 0 1-5.028-1.354L2 22l3.002-.5z"/>
+            </svg>
+            {inv.contact_phone}
+          </a>
+        )}
+      </div>
+    )}
+
+    <!-- Back to top -->
+    <button class="footer-top-btn" id="back-to-top-btn" type="button" aria-label="Kembali ke atas skrin">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <polyline points="18 15 12 9 6 15"></polyline>
+      </svg>
+      Kembali ke Atas
+    </button>
+
+    <!-- Pancatz branding -->
+    <p class="footer-pancatz">
+      Dijana dengan ♡ oleh
+      <a
+        href="https://pancatz.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="footer-pancatz-link"
+      >
+        Pancatz
+      </a>
+    </p>
+  </div>
+</footer>
+
+<script>
+  function setupFooter() {
+    const topBtn = document.getElementById('back-to-top-btn');
+    topBtn?.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupFooter);
+  } else {
+    setupFooter();
+  }
+</script>
+
+<style>
+  .footer {
+    padding: clamp(3rem, 7vw, 5rem) 1.5rem;
+    background: var(--midnight);
+    text-align: center;
+  }
+
+  /* Divider */
+  .footer-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 480px;
+    margin: 0 auto clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--light-jade), transparent);
+  }
+
+  .divider-ornament {
+    flex-shrink: 0;
+    opacity: 0.5;
+    filter: brightness(0) saturate(100%) invert(76%) sepia(43%) saturate(480%)
+      hue-rotate(5deg) brightness(95%);
+  }
+
+  .footer-inner {
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(1rem, 2.5vw, 1.5rem);
+  }
+
+  .footer-names {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.5rem, 4vw, 2.1rem);
+    color: var(--ivory);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .footer-amp {
+    color: var(--antique-gold);
+    font-style: normal;
+    margin: 0 0.25em;
+  }
+
+  .footer-contact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .footer-contact-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.76rem;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  .footer-contact-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    color: var(--ivory);
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .footer-phone-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    color: var(--antique-gold);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .footer-phone-link:hover {
+    color: var(--light-gold);
+  }
+
+  .footer-top-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    background: transparent;
+    border: 1px solid rgba(184, 200, 190, 0.25);
+    color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    padding: 0.6em 1.3em;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    margin-top: 0.5rem;
+  }
+
+  .footer-top-btn:hover {
+    border-color: var(--antique-gold);
+    color: var(--ivory);
+    background: rgba(217, 184, 103, 0.06);
+  }
+
+  .footer-pancatz {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.74rem;
+    color: var(--muted);
+    margin: 0;
+    margin-top: 0.5rem;
+  }
+
+  .footer-pancatz-link {
+    color: var(--antique-gold);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  .footer-pancatz-link:hover {
+    color: var(--light-gold);
+  }
+</style>

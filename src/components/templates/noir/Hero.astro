@@ -1,0 +1,260 @@
+---
+/**
+ * Hero.astro — Layout B Noir (Quiet Luxury)
+ * Split-screen hero: Left = massive couple names, Right = date / venue / countdown / calendar CTA.
+ */
+import type { Invitation } from '../../../lib/directus';
+import { formatEventDate, buildCalendarUrl } from '../../../lib/invitation-utils';
+
+interface Props {
+  invitation: Invitation;
+}
+
+const { invitation } = Astro.props;
+
+const eventDate = formatEventDate(invitation.event_date_time);
+const calendarUrl = buildCalendarUrl({
+  eventDateTime: invitation.event_date_time,
+  calendarDetails: invitation.calendar_details,
+  venueAddress: invitation.venue_address,
+});
+---
+
+<section class="hero" aria-label="Tarikh dan Lokasi Majlis">
+  <!-- Left column: Massive names -->
+  <div id="hero-left" class="hero__left">
+    <span class="hero__label">WALIMATULURUS</span>
+    <h1 class="hero__names">
+      <span class="hero__name">{invitation.couple_name_1}</span>
+      <span class="hero__ampersand">&amp;</span>
+      <span class="hero__name">{invitation.couple_name_2}</span>
+    </h1>
+  </div>
+
+  <!-- Right column: Date, Venue, Countdown, Calendar -->
+  <div id="hero-right" class="hero__right">
+    <div class="hero__meta-item">
+      <span class="hero__meta-label">Tarikh</span>
+      <span class="hero__meta-value">{eventDate}</span>
+    </div>
+
+    <div class="hero__divider-line" aria-hidden="true"></div>
+
+    {invitation.venue_name && (
+      <div class="hero__meta-item">
+        <span class="hero__meta-label">Lokasi</span>
+        <span class="hero__meta-value">{invitation.venue_name}</span>
+      </div>
+    )}
+
+    <!-- Countdown Timer -->
+    <div class="hero__countdown" id="countdown" aria-label="Kiraan masa sehingga majlis">
+      <div class="hero__countdown-unit">
+        <span class="hero__countdown-digit" data-unit="days">--</span>
+        <span class="hero__countdown-label">Hari</span>
+      </div>
+      <div class="hero__countdown-unit">
+        <span class="hero__countdown-digit" data-unit="hours">--</span>
+        <span class="hero__countdown-label">Jam</span>
+      </div>
+      <div class="hero__countdown-unit">
+        <span class="hero__countdown-digit" data-unit="mins">--</span>
+        <span class="hero__countdown-label">Minit</span>
+      </div>
+      <div class="hero__countdown-unit">
+        <span class="hero__countdown-digit" data-unit="secs">--</span>
+        <span class="hero__countdown-label">Saat</span>
+      </div>
+    </div>
+
+    <a
+      href={calendarUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="hero__calendar-btn"
+      aria-label="Simpan tarikh perkahwinan ke Kalendar Google"
+    >
+      Simpan ke Kalendar
+    </a>
+  </div>
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100svh;
+    background-color: #FAF8F5;
+    color: #2C2C2C;
+  }
+
+  /* ── Left Column ── */
+  .hero__left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(48px, 8vw, 110px) clamp(28px, 6vw, 84px);
+    border-right: 1px solid #E8E0D4;
+  }
+
+  .hero__label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #8A8A8A;
+    margin-bottom: 24px;
+  }
+
+  .hero__names {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    line-height: 0.95;
+  }
+
+  .hero__name {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 100;
+    font-size: clamp(48px, 8.5vw, 115px);
+    color: #1A1A1A;
+    letter-spacing: -0.02em;
+    display: block;
+  }
+
+  .hero__ampersand {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 100;
+    font-style: italic;
+    font-size: clamp(24px, 4vw, 52px);
+    color: #C5A55A;
+    line-height: 1.2;
+    display: block;
+  }
+
+  /* ── Right Column ── */
+  .hero__right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 28px;
+    padding: clamp(48px, 8vw, 110px) clamp(28px, 6vw, 84px);
+  }
+
+  .hero__meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .hero__meta-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #8A8A8A;
+  }
+
+  .hero__meta-value {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(17px, 2.3vw, 24px);
+    color: #1A1A1A;
+    line-height: 1.4;
+  }
+
+  .hero__divider-line {
+    height: 1px;
+    background: #E8E0D4;
+    width: 100%;
+  }
+
+  /* ── Countdown ── */
+  .hero__countdown {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .hero__countdown-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .hero__countdown-digit {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 100;
+    font-size: clamp(28px, 4.5vw, 44px);
+    color: #1A1A1A;
+    border-bottom: 1px solid #C5A55A;
+    padding-bottom: 4px;
+    min-width: 2.2ch;
+    text-align: center;
+    display: block;
+  }
+
+  .hero__countdown-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8A8A8A;
+  }
+
+  /* ── Calendar Button ── */
+  .hero__calendar-btn {
+    display: inline-block;
+    padding: 12px 28px;
+    border: 1px solid #2C2C2C;
+    color: #1A1A1A;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    align-self: flex-start;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  .hero__calendar-btn:hover,
+  .hero__calendar-btn:focus-visible {
+    background: #1A1A1A;
+    color: #FAF8F5;
+    outline: none;
+  }
+
+  /* ── Mobile Layout ── */
+  @media (max-width: 768px) {
+    .hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+
+    .hero__left {
+      border-right: none;
+      border-bottom: 1px solid #E8E0D4;
+      padding: 60px 24px 40px;
+    }
+
+    .hero__right {
+      padding: 40px 24px 60px;
+    }
+
+    .hero__name {
+      font-size: clamp(42px, 13vw, 76px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__calendar-btn {
+      transition: none;
+    }
+  }
+</style>

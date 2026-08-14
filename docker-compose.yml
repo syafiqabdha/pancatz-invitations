@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    container_name: pancatz-invitations
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=4321
+      - DIRECTUS_URL=${DIRECTUS_URL:-https://directus.pancatz.com}
+      - DIRECTUS_ADMIN_TOKEN=${DIRECTUS_ADMIN_TOKEN:?}
+      - N8N_CONTACT_WEBHOOK=${N8N_CONTACT_WEBHOOK:-}
+      - SITE_URL=${SITE_URL:-https://inv.pancatz.com}

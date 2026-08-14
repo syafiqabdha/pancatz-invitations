@@ -1,0 +1,103 @@
+---
+/**
+ * VerseSection.astro — Layout B Noir (Quiet Luxury)
+ * Centered pull-quote with massive quotation marks and Playfair italic verse text.
+ */
+import type { Invitation } from '../../../lib/directus';
+
+interface Props {
+  invitation: Invitation;
+}
+
+const { invitation } = Astro.props;
+
+const rawText = invitation.verse_or_message ||
+  '"Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya di antaramu rasa kasih dan sayang."\n— Surah Ar-Rum, Ayat 21';
+
+// Split verse from attribution if separated by em-dash or newline
+const lines = rawText.split(/\n—|—|\n/).map((l) => l.trim()).filter(Boolean);
+const verse = lines[0] ?? rawText;
+const attribution = lines.slice(1).join(' ').trim() || null;
+---
+
+<section class="verse" aria-label="Ayat Al-Quran & Pesanan" data-reveal="up">
+  <div class="verse__inner">
+    <span class="verse__mark verse__mark--open" aria-hidden="true">&ldquo;</span>
+    <blockquote class="verse__quote">
+      <p class="verse__text">{verse}</p>
+      {attribution && (
+        <footer class="verse__attribution">
+          <cite>&mdash; {attribution}</cite>
+        </footer>
+      )}
+    </blockquote>
+    <span class="verse__mark verse__mark--close" aria-hidden="true">&rdquo;</span>
+  </div>
+</section>
+
+<style>
+  .verse {
+    padding: clamp(64px, 10vw, 120px) clamp(24px, 6vw, 80px);
+    background-color: #FAF8F5;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .verse__inner {
+    position: relative;
+    max-width: 680px;
+    width: 100%;
+    text-align: center;
+    padding: 0 clamp(16px, 4vw, 48px);
+  }
+
+  .verse__mark {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(72px, 14vw, 140px);
+    color: #E8E0D4;
+    line-height: 0.6;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .verse__mark--open {
+    text-align: left;
+    margin-bottom: -20px;
+  }
+
+  .verse__mark--close {
+    text-align: right;
+    margin-top: -16px;
+  }
+
+  .verse__quote {
+    margin: 0;
+  }
+
+  .verse__text {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(16px, 2.2vw, 21px);
+    color: #2C2C2C;
+    line-height: 1.8;
+    margin: 0;
+  }
+
+  .verse__attribution {
+    margin-top: 24px;
+  }
+
+  .verse__attribution cite {
+    font-family: 'DM Sans', sans-serif;
+    font-style: normal;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #8A8A8A;
+  }
+</style>

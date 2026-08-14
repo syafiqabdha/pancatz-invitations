@@ -1,0 +1,163 @@
+---
+/**
+ * src/components/templates/songket/RsvpSection.astro
+ * RSVP CTA Section with decorative divider, invitation deadline,
+ * and primary button to open the full-screen RSVP modal.
+ */
+import type { Invitation } from '../../../lib/directus';
+
+interface Props {
+  inv: Invitation;
+}
+
+const { inv } = Astro.props;
+
+// Calculate RSVP confirmation deadline (7 days before event)
+const eventTimestamp = new Date(inv.event_date_time).getTime();
+const deadlineDate = new Date(eventTimestamp - 7 * 24 * 3600 * 1000).toLocaleDateString('ms-MY', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: inv.timezone || 'Asia/Kuala_Lumpur',
+});
+---
+
+<section class="rsvp-section section-reveal" aria-label="Sahkan Kehadiran">
+  <div class="rsvp-inner">
+    <!-- Mandala divider from /ornaments/ -->
+    <div class="rsvp-divider" aria-hidden="true">
+      <span class="divider-line"></span>
+      <img
+        src="/ornaments/mandala-divider.svg"
+        alt=""
+        class="divider-ornament"
+        width="44"
+        height="44"
+        loading="lazy"
+      />
+      <span class="divider-line"></span>
+    </div>
+
+    <p class="rsvp-label">Sahkan Kehadiran Anda</p>
+    <h2 class="rsvp-heading">
+      Kami Menunggu<br />
+      <em>Kehadiran Anda</em>
+    </h2>
+    <p class="rsvp-desc">
+      Kehadiran serta doa restu anda amat bermakna buat kami sekeluarga.
+      Sila sahkan kehadiran anda sebelum <strong>{deadlineDate}</strong>.
+    </p>
+
+    <!-- Modal Trigger Button -->
+    <button
+      class="rsvp-cta-btn"
+      id="open-rsvp-modal-btn"
+      type="button"
+      aria-haspopup="dialog"
+      aria-controls="rsvp-modal"
+    >
+      Hantar RSVP
+    </button>
+  </div>
+</section>
+
+<style>
+  .rsvp-section {
+    padding: clamp(3.5rem, 8vw, 6rem) 1.5rem;
+    background: var(--deep-green);
+    text-align: center;
+  }
+
+  .rsvp-inner {
+    max-width: 580px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+  }
+
+  /* Divider */
+  .rsvp-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--light-jade), transparent);
+  }
+
+  .divider-ornament {
+    flex-shrink: 0;
+    opacity: 0.65;
+    filter: brightness(0) saturate(100%) invert(76%) sepia(43%) saturate(480%)
+      hue-rotate(5deg) brightness(95%);
+  }
+
+  .rsvp-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--antique-gold);
+  }
+
+  .rsvp-heading {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    color: var(--ivory);
+    font-weight: 600;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  .rsvp-heading em {
+    color: var(--light-gold);
+  }
+
+  .rsvp-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(0.88rem, 2.2vw, 0.98rem);
+    color: var(--muted);
+    line-height: 1.75;
+    max-width: 52ch;
+  }
+
+  .rsvp-desc strong {
+    color: var(--ivory);
+    font-weight: 600;
+  }
+
+  /* CTA Button */
+  .rsvp-cta-btn {
+    margin-top: 0.5rem;
+    padding: 0.95em 2.8em;
+    background: var(--antique-gold);
+    color: var(--midnight);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .rsvp-cta-btn:hover {
+    background: var(--light-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(217, 184, 103, 0.25);
+  }
+
+  .rsvp-cta-btn:active {
+    transform: translateY(0);
+  }
+</style>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 48" fill="none">
+  <defs>
+    <linearGradient id="gold-div" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#D9B867" stop-opacity="0"/>
+      <stop offset="25%" stop-color="#D9B867" stop-opacity="0.7"/>
+      <stop offset="50%" stop-color="#F1D993"/>
+      <stop offset="75%" stop-color="#D9B867" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#D9B867" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <line x1="0" y1="24" x2="600" y2="24" stroke="url(#gold-div)" stroke-width="0.7"/>
+  <!-- Center diamond cluster -->
+  <g transform="translate(300,24)">
+    <path d="M0,-10 L10,0 L0,10 L-10,0 Z" stroke="#D9B867" stroke-width="0.8" stroke-opacity="0.8" fill="none"/>
+    <path d="M0,-6 L6,0 L0,6 L-6,0 Z" fill="#D9B867" fill-opacity="0.5"/>
+    <circle r="2" fill="#F1D993" fill-opacity="0.9"/>
+    <path d="M-22,0 L-16,-4 L-16,4 Z" fill="#D9B867" fill-opacity="0.5"/>
+    <path d="M22,0 L16,-4 L16,4 Z" fill="#D9B867" fill-opacity="0.5"/>
+    <line x1="-15" y1="0" x2="-22" y2="0" stroke="#D9B867" stroke-width="0.5" stroke-opacity="0.6"/>
+    <line x1="15" y1="0" x2="22" y2="0" stroke="#D9B867" stroke-width="0.5" stroke-opacity="0.6"/>
+  </g>
+  <!-- Side dots -->
+  <circle cx="240" cy="24" r="2" fill="#D9B867" fill-opacity="0.5"/>
+  <circle cx="220" cy="24" r="1.5" fill="#D9B867" fill-opacity="0.4"/>
+  <circle cx="200" cy="24" r="1" fill="#D9B867" fill-opacity="0.3"/>
+  <circle cx="360" cy="24" r="2" fill="#D9B867" fill-opacity="0.5"/>
+  <circle cx="380" cy="24" r="1.5" fill="#D9B867" fill-opacity="0.4"/>
+  <circle cx="400" cy="24" r="1" fill="#D9B867" fill-opacity="0.3"/>
+</svg>

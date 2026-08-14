@@ -1,0 +1,71 @@
+---
+import { getInvitationBySlug } from '../../lib/directus';
+import { mockInvitation } from '../../data/mock-invitation';
+import Cover from '../../components/templates/noir/Cover.astro';
+import Hero from '../../components/templates/noir/Hero.astro';
+import VerseSection from '../../components/templates/noir/VerseSection.astro';
+import StorySection from '../../components/templates/noir/StorySection.astro';
+import Venue from '../../components/templates/noir/Venue.astro';
+import Schedule from '../../components/templates/noir/Schedule.astro';
+import Gallery from '../../components/templates/noir/Gallery.astro';
+import DressCode from '../../components/templates/noir/DressCode.astro';
+import GiftSection from '../../components/templates/noir/GiftSection.astro';
+import RsvpSection from '../../components/templates/noir/RsvpSection.astro';
+import Footer from '../../components/templates/noir/Footer.astro';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const slugStr = Array.isArray(slug) ? slug.join('/') : (slug ?? '');
+const useMock = !import.meta.env.DIRECTUS_URL || slugStr === 'preview' || slugStr === '';
+const invitation = useMock ? mockInvitation : ((await getInvitationBySlug(slugStr)) ?? mockInvitation);
+const title = `Walimatulurus ${invitation.couple_name_1} & ${invitation.couple_name_2}`;
+---
+<!DOCTYPE html>
+<html lang="ms" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={`Jemputan majlis perkahwinan ${invitation.couple_name_1} & ${invitation.couple_name_2}.`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,100;0,400;0,700;1,100;1,400;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body { background-color: #FAF8F5; color: #2C2C2C; font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+      @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    </style>
+  </head>
+  <body>
+    <Cover invitation={invitation} />
+    <main id="main-content" aria-hidden="true">
+      <Hero invitation={invitation} />
+      <VerseSection invitation={invitation} />
+      <StorySection invitation={invitation} />
+      <Venue invitation={invitation} />
+      <Schedule invitation={invitation} />
+      <Gallery invitation={invitation} />
+      <DressCode invitation={invitation} />
+      <GiftSection invitation={invitation} />
+      <RsvpSection invitation={invitation} />
+      <Footer />
+    </main>
+    <noscript>
+      <style>#cover { display: none !important; } #main-content { visibility: visible !important; }</style>
+    </noscript>
+    <script is:inline define:vars={{ targetIso: invitation.event_date_time }}>
+      window.__noirTargetIso = targetIso;
+    </script>
+    <script>
+      import { initNoirAnimations } from '../../lib/invitation-animations-noir';
+      document.addEventListener('DOMContentLoaded', () => {
+        initNoirAnimations({
+          targetIso: ((window as unknown as Record<string, string>).__noirTargetIso) || '',
+          hasCover: true,
+        });
+      });
+    </script>
+  </body>
+</html>

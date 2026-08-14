@@ -1,0 +1,140 @@
+---
+/**
+ * StorySection.astro — Full-screen story panel with side vines (Layout C: Ethereal Garden)
+ */
+export interface Props {
+  story?: string;
+  coupleName1: string;
+  coupleName2: string;
+}
+
+const { story, coupleName1, coupleName2 } = Astro.props;
+if (!story) return;
+---
+
+<section class="garden-panel garden-story" id="story" aria-label="Kisah Cinta">
+  <!-- Side vine decorations -->
+  <img class="garden-story__vine garden-story__vine--left" src="/botanicals/side-vine.svg" alt="" aria-hidden="true" />
+  <img class="garden-story__vine garden-story__vine--right" src="/botanicals/side-vine.svg" alt="" aria-hidden="true" />
+
+  <div class="garden-story__inner">
+    <header class="garden-story__header">
+      <img class="garden-story__sprig" src="/botanicals/divider-sprig.svg" alt="" aria-hidden="true" />
+      <h2 class="garden-story__title">Kisah Kami</h2>
+      <img class="garden-story__sprig" src="/botanicals/divider-sprig.svg" alt="" aria-hidden="true" />
+    </header>
+
+    <div class="garden-story__names">
+      <span>{coupleName1}</span>
+      <span class="garden-story__heart" aria-hidden="true">♡</span>
+      <span>{coupleName2}</span>
+    </div>
+
+    <p class="garden-story__text">{story}</p>
+
+    <img class="garden-story__divider" src="/botanicals/divider-sprig.svg" alt="" aria-hidden="true" />
+  </div>
+</section>
+
+<style>
+  .garden-story {
+    background: #FDF8F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    height: 100dvh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+  }
+
+  .garden-story__vine {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: clamp(50px, 10vw, 100px);
+    opacity: 0.4;
+    pointer-events: none;
+    object-fit: contain;
+    z-index: 1;
+  }
+
+  .garden-story__vine--left {
+    left: 0;
+  }
+
+  .garden-story__vine--right {
+    right: 0;
+    transform: scaleX(-1);
+  }
+
+  .garden-story__inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 1.5rem clamp(1.2rem, 10vw, 6rem);
+    max-width: 580px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.75rem, 2vh, 1.3rem);
+  }
+
+  .garden-story__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
+  }
+
+  .garden-story__sprig {
+    width: clamp(35px, 8vw, 65px);
+    opacity: 0.65;
+    flex-shrink: 0;
+  }
+
+  .garden-story__title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    color: #5C7A54;
+    margin: 0;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  .garden-story__names {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
+    color: #8FA98A;
+    font-weight: 500;
+  }
+
+  .garden-story__heart {
+    color: #C4988A;
+    font-size: 0.9em;
+  }
+
+  .garden-story__text {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(0.86rem, 1.8vw, 1.02rem);
+    color: #3D3D3D;
+    line-height: 1.8;
+    opacity: 0.88;
+    margin: 0;
+    text-align: center;
+  }
+
+  .garden-story__divider {
+    width: clamp(70px, 18vw, 130px);
+    opacity: 0.5;
+    margin-top: 0.3rem;
+  }
+</style>

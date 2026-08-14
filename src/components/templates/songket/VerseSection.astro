@@ -1,0 +1,92 @@
+---
+/**
+ * src/components/templates/songket/VerseSection.astro
+ * Centered Quranic verse / message section with decorative quotation marks
+ * and attribution.
+ */
+import type { Invitation } from '../../../lib/directus';
+
+interface Props {
+  inv: Invitation;
+}
+
+const { inv } = Astro.props;
+
+const rawVerse = inv.verse_or_message ?? '';
+const [verseBody, ...attrParts] = rawVerse.split('\n—');
+const attribution = attrParts.length ? '— ' + attrParts.join('\n—').trim() : '';
+const verseText = verseBody.replace(/^["“]|["”]$/g, '').trim();
+---
+
+{rawVerse && (
+  <section class="verse section-reveal" aria-label="Ayat Suci &amp; Mutiara Kata">
+    <div class="verse-inner">
+      <span class="verse-quote-mark open" aria-hidden="true">&ldquo;</span>
+      <blockquote class="verse-body">
+        <p class="verse-text">{verseText}</p>
+        {attribution && (
+          <footer class="verse-attribution">{attribution}</footer>
+        )}
+      </blockquote>
+      <span class="verse-quote-mark close" aria-hidden="true">&rdquo;</span>
+    </div>
+  </section>
+)}
+
+<style>
+  .verse {
+    padding: clamp(3.5rem, 8vw, 6rem) clamp(1.5rem, 6vw, 5rem);
+    background: var(--deep-green);
+    text-align: center;
+    position: relative;
+  }
+
+  .verse-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    position: relative;
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
+  }
+
+  .verse-quote-mark {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(4.5rem, 12vw, 7.5rem);
+    color: var(--antique-gold);
+    line-height: 0;
+    position: absolute;
+    opacity: 0.35;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .verse-quote-mark.open {
+    top: 0.6em;
+    left: -0.2em;
+  }
+
+  .verse-quote-mark.close {
+    bottom: -0.2em;
+    right: -0.2em;
+  }
+
+  .verse-body {
+    margin: 0;
+  }
+
+  .verse-text {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.1rem, 3.5vw, 1.55rem);
+    color: var(--ivory);
+    line-height: 1.75;
+    margin: 0 0 1.25rem;
+  }
+
+  .verse-attribution {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(0.72rem, 2vw, 0.8rem);
+    letter-spacing: 0.12em;
+    color: var(--antique-gold);
+    text-transform: uppercase;
+  }
+</style>

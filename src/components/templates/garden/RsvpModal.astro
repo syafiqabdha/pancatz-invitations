@@ -1,0 +1,539 @@
+---
+/**
+ * RsvpModal.astro — Full-screen RSVP modal with bloom success animation & trigger button (Layout C)
+ */
+export interface Props {
+  invitationId: string;
+  guestName?: string;
+}
+
+const { invitationId, guestName } = Astro.props;
+---
+
+<!-- Visible Floating "Send RSVP" button across snap panels -->
+<div class="garden-rsvp-float-wrap">
+  <button class="garden-rsvp-float-btn garden-rsvp-trigger" id="garden-rsvp-floating-btn" type="button" aria-label="Buka Borang RSVP">
+    <span class="garden-rsvp-btn-icon" aria-hidden="true">💌</span>
+    <span class="garden-rsvp-btn-text">Send RSVP</span>
+  </button>
+</div>
+
+<!-- Full-screen Modal Overlay -->
+<div
+  class="garden-rsvp-modal-overlay"
+  id="garden-rsvp-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Borang Pengesahan Kehadiran"
+  hidden
+>
+  <!-- Botanical corner ornaments -->
+  <img class="garden-rsvp__corner garden-rsvp__corner--tl" src="/botanicals/corner-rose.svg" alt="" aria-hidden="true" />
+  <img class="garden-rsvp__corner garden-rsvp__corner--br" src="/botanicals/corner-rose.svg" alt="" aria-hidden="true" />
+
+  <div class="garden-rsvp__card">
+    <button class="garden-rsvp__close" id="garden-rsvp-close" type="button" aria-label="Tutup Borang RSVP">&#10005;</button>
+
+    <div class="garden-rsvp__header">
+      <img class="garden-rsvp__sprig" src="/botanicals/divider-sprig.svg" alt="" aria-hidden="true" />
+      <h2 class="garden-rsvp__title">Maklum Balas Kehadiran</h2>
+      <p class="garden-rsvp__subtitle">Sila sahkan kehadiran anda ke majlis kami</p>
+    </div>
+
+    <!-- Success state -->
+    <div class="garden-rsvp__success" id="garden-rsvp-success" hidden aria-live="assertive">
+      <div class="garden-rsvp__bloom-icon" aria-hidden="true">🌸</div>
+      <h3 class="garden-rsvp__success-title">Terima Kasih!</h3>
+      <p class="garden-rsvp__success-msg">Maklum balas anda telah diterima. Kami menantikan kehadiran anda!</p>
+      <button class="garden-rsvp__success-btn" id="garden-rsvp-done-btn" type="button">Tutup</button>
+    </div>
+
+    <!-- Form -->
+    <form class="garden-rsvp__form" id="garden-rsvp-form" novalidate>
+      <input type="hidden" name="invitation" value={invitationId} />
+
+      <div class="garden-rsvp__field">
+        <label class="garden-rsvp__label" for="rsvp-name">Nama Penuh</label>
+        <input
+          class="garden-rsvp__input"
+          type="text"
+          id="rsvp-name"
+          name="guest_name"
+          value={guestName ?? ''}
+          placeholder="cth: Ahmad Farhan"
+          required
+          autocomplete="name"
+        />
+        <span class="garden-rsvp__err" id="rsvp-name-err" role="alert"></span>
+      </div>
+
+      <div class="garden-rsvp__field">
+        <label class="garden-rsvp__label" for="rsvp-phone">Nombor Telefon</label>
+        <input
+          class="garden-rsvp__input"
+          type="tel"
+          id="rsvp-phone"
+          name="telephone"
+          placeholder="+60 12-345 6789"
+          required
+          autocomplete="tel"
+        />
+        <span class="garden-rsvp__err" id="rsvp-phone-err" role="alert"></span>
+      </div>
+
+      <div class="garden-rsvp__field garden-rsvp__radio-group" role="group" aria-labelledby="attend-label">
+        <p class="garden-rsvp__label" id="attend-label">Status Kehadiran</p>
+        <div class="garden-rsvp__radios">
+          <label class="garden-rsvp__radio-label">
+            <input type="radio" name="attendance_status" value="attending" required />
+            <span class="garden-rsvp__radio-custom"></span>
+            <span>Hadir</span>
+          </label>
+          <label class="garden-rsvp__radio-label">
+            <input type="radio" name="attendance_status" value="not_attending" />
+            <span class="garden-rsvp__radio-custom"></span>
+            <span>Tidak Hadir</span>
+          </label>
+        </div>
+        <span class="garden-rsvp__err" id="rsvp-attend-err" role="alert"></span>
+      </div>
+
+      <div class="garden-rsvp__field">
+        <label class="garden-rsvp__label" for="rsvp-wish">Ucapan &amp; Doa (Pilihan)</label>
+        <textarea
+          class="garden-rsvp__input garden-rsvp__textarea"
+          id="rsvp-wish"
+          name="wish"
+          placeholder="Titipkan ucapan dan doa buat kedua pengantin..."
+          rows="3"
+        ></textarea>
+      </div>
+
+      <button class="garden-rsvp__submit" type="submit" id="garden-rsvp-submit">
+        <span>Hantar RSVP</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function setupRsvpModal(): void {
+    const modal = document.getElementById('garden-rsvp-modal') as HTMLDivElement | null;
+    const closeBtn = document.getElementById('garden-rsvp-close') as HTMLButtonElement | null;
+    const doneBtn = document.getElementById('garden-rsvp-done-btn') as HTMLButtonElement | null;
+    const form = document.getElementById('garden-rsvp-form') as HTMLFormElement | null;
+    const successDiv = document.getElementById('garden-rsvp-success') as HTMLDivElement | null;
+    const submitBtn = document.getElementById('garden-rsvp-submit') as HTMLButtonElement | null;
+
+    function openModal(): void {
+      if (!modal) return;
+      modal.hidden = false;
+      modal.focus();
+    }
+
+    function closeModal(): void {
+      if (!modal) return;
+      modal.hidden = true;
+    }
+
+    // Attach open handler to all elements with .garden-rsvp-trigger
+    document.querySelectorAll('.garden-rsvp-trigger').forEach((btn) => {
+      btn.addEventListener('click', openModal);
+    });
+
+    closeBtn?.addEventListener('click', closeModal);
+    doneBtn?.addEventListener('click', closeModal);
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal && !modal.hidden) closeModal();
+    });
+
+    function validate(formData: FormData): boolean {
+      let ok = true;
+
+      const setErr = (id: string, msg: string): void => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = msg;
+      };
+
+      setErr('rsvp-name-err', '');
+      setErr('rsvp-phone-err', '');
+      setErr('rsvp-attend-err', '');
+
+      const name = String(formData.get('guest_name') ?? '').trim();
+      const phone = String(formData.get('telephone') ?? '').trim();
+      const status = formData.get('attendance_status');
+
+      if (!name) {
+        setErr('rsvp-name-err', 'Sila masukkan nama anda.');
+        ok = false;
+      }
+      if (!phone) {
+        setErr('rsvp-phone-err', 'Sila masukkan nombor telefon.');
+        ok = false;
+      }
+      if (!status) {
+        setErr('rsvp-attend-err', 'Sila pilih kehadiran anda.');
+        ok = false;
+      }
+
+      return ok;
+    }
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      if (!validate(data)) return;
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Menghantar...';
+      }
+
+      try {
+        const payload = Object.fromEntries(data.entries());
+        const res = await fetch('/api/rsvp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (res.ok) {
+          if (form) form.hidden = true;
+          if (successDiv) successDiv.hidden = false;
+
+          // Bloom animation
+          if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            const { rsvpBloomSuccess } = await import('../../../lib/invitation-animations-garden');
+            const successEl = document.querySelector('.garden-rsvp__success');
+            if (successEl) rsvpBloomSuccess(successEl);
+          }
+        } else {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Hantar RSVP';
+          }
+          const errEl = document.getElementById('rsvp-attend-err');
+          if (errEl) errEl.textContent = 'Ralat semasa menghantar. Sila cuba lagi.';
+        }
+      } catch {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Hantar RSVP';
+        }
+        const errEl = document.getElementById('rsvp-attend-err');
+        if (errEl) errEl.textContent = 'Ralat sambungan. Sila cuba lagi.';
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupRsvpModal);
+  } else {
+    setupRsvpModal();
+  }
+</script>
+
+<style>
+  /* Floating trigger button */
+  .garden-rsvp-float-wrap {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 100;
+  }
+
+  .garden-rsvp-float-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.75em 1.6em;
+    border: none;
+    border-radius: 999px;
+    background: #5C7A54;
+    color: #FDF8F0;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.92rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    box-shadow: 0 6px 22px rgba(92, 122, 84, 0.35);
+    transition: transform 0.22s ease, background-color 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .garden-rsvp-float-btn:hover,
+  .garden-rsvp-float-btn:focus-visible {
+    background: #4E6A47;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 28px rgba(92, 122, 84, 0.45);
+    outline: none;
+  }
+
+  .garden-rsvp-btn-icon {
+    font-size: 1.1em;
+  }
+
+  /* Modal Overlay */
+  .garden-rsvp-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 400;
+    background: rgba(45, 45, 45, 0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    overflow-y: auto;
+    animation: garden-fade-in 0.25s ease;
+    box-sizing: border-box;
+  }
+
+  .garden-rsvp-modal-overlay[hidden] {
+    display: none;
+  }
+
+  @keyframes garden-fade-in {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .garden-rsvp__corner {
+    position: absolute;
+    width: clamp(70px, 14vw, 120px);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .garden-rsvp__corner--tl { top: 0; left: 0; }
+  .garden-rsvp__corner--br { bottom: 0; right: 0; transform: scale(-1); }
+
+  .garden-rsvp__card {
+    position: relative;
+    background: #FDF8F0;
+    border: 1px solid rgba(143, 169, 138, 0.35);
+    border-radius: 24px;
+    padding: clamp(1.2rem, 3.5vw, 2rem);
+    width: 100%;
+    max-width: 440px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    box-sizing: border-box;
+  }
+  @media (max-width: 480px) {
+    .garden-rsvp__card {
+      max-height: none;
+      overflow-y: visible;
+      border-radius: 16px 16px 0 0;
+      padding: 1.2rem 1rem;
+      gap: 0.4rem;
+      margin-top: auto;
+    }
+    .garden-rsvp-modal-overlay { align-items: flex-end; padding: 0; }
+  }
+
+  .garden-rsvp__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: 1px solid rgba(143, 169, 138, 0.4);
+    color: #888888;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .garden-rsvp__close:hover {
+    background: #E8C4B8;
+    color: #3D3D3D;
+  }
+
+  .garden-rsvp__header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    width: 100%;
+  }
+
+  .garden-rsvp__sprig {
+    width: clamp(60px, 14vw, 100px);
+    opacity: 0.55;
+  }
+
+  .garden-rsvp__title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.3rem, 3.5vw, 1.75rem);
+    color: #5C7A54;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .garden-rsvp__subtitle {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.78rem;
+    color: #888888;
+    margin: 0;
+  }
+
+  .garden-rsvp__success {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    position: relative;
+    padding: 1.5rem 0.5rem;
+  }
+
+  .garden-rsvp__bloom-icon {
+    font-size: 3rem;
+    animation: bloom-pop 0.5s ease both;
+  }
+
+  @keyframes bloom-pop {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .garden-rsvp__success-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 1.6rem;
+    color: #5C7A54;
+    margin: 0;
+  }
+
+  .garden-rsvp__success-msg {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.88rem;
+    color: #3D3D3D;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .garden-rsvp__success-btn {
+    margin-top: 0.5rem;
+    padding: 0.6em 1.8em;
+    border: none;
+    border-radius: 999px;
+    background: #5C7A54;
+    color: #FDF8F0;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+  }
+
+  .garden-rsvp__form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .garden-rsvp__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .garden-rsvp__label {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.76rem;
+    color: #5C7A54;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+
+  .garden-rsvp__input {
+    padding: 0.65em 0.9em;
+    border: 1.5px solid rgba(143, 169, 138, 0.4);
+    border-radius: 12px;
+    background: #FFFFFF;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.9rem;
+    color: #3D3D3D;
+    transition: border-color 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .garden-rsvp__input:focus {
+    outline: none;
+    border-color: #5C7A54;
+  }
+
+  .garden-rsvp__textarea {
+    resize: vertical;
+    min-height: 70px;
+  }
+
+  .garden-rsvp__radios {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    padding: 0.2rem 0;
+  }
+
+  .garden-rsvp__radio-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.88rem;
+    color: #3D3D3D;
+    cursor: pointer;
+  }
+
+  .garden-rsvp__err {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.74rem;
+    color: #C4988A;
+    min-height: 1em;
+  }
+
+  .garden-rsvp__submit {
+    margin-top: 0.3rem;
+    padding: 0.8em;
+    border: none;
+    border-radius: 999px;
+    background: #5C7A54;
+    color: #FDF8F0;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: background 0.22s, transform 0.18s;
+    width: 100%;
+    font-weight: 500;
+  }
+
+  .garden-rsvp__submit:hover,
+  .garden-rsvp__submit:focus-visible {
+    background: #4E6A47;
+    transform: translateY(-1px);
+    outline: none;
+  }
+
+  .garden-rsvp__submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+</style>

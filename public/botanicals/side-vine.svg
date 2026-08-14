@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 600" aria-hidden="true">
+  <defs>
+    <linearGradient id="leaf-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8FA98A"/>
+      <stop offset="100%" stop-color="#5C7A54"/>
+    </linearGradient>
+    <linearGradient id="rose-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8C4B8"/>
+      <stop offset="100%" stop-color="#C4988A"/>
+    </linearGradient>
+  </defs>
+  <!-- Vine Path -->
+  <path d="M 50 0 Q 80 150, 40 300 T 60 600" fill="none" stroke="#5C7A54" stroke-width="3" stroke-linecap="round"/>
+  <!-- Leaves and Roses along Vine -->
+  <!-- Top Section -->
+  <path d="M 60 50 C 80 40, 90 60, 70 70 Z" fill="url(#leaf-grad)"/>
+  <path d="M 55 100 C 30 90, 20 110, 45 120 Z" fill="url(#leaf-grad)"/>
+  <circle cx="75" cy="150" r="10" fill="url(#rose-grad)"/>
+  <circle cx="82" cy="143" r="3" fill="#D4A843"/>
+  <!-- Middle Section -->
+  <path d="M 40 250 C 20 230, 10 260, 35 270 Z" fill="url(#leaf-grad)"/>
+  <path d="M 45 350 C 70 340, 80 370, 55 380 Z" fill="url(#leaf-grad)"/>
+  <circle cx="30" cy="300" r="12" fill="url(#rose-grad)"/>
+  <circle cx="23" cy="293" r="3" fill="#D4A843"/>
+  <!-- Bottom Section -->
+  <path d="M 50 450 C 30 430, 20 460, 45 470 Z" fill="url(#leaf-grad)"/>
+  <path d="M 55 520 C 80 500, 90 530, 65 540 Z" fill="url(#leaf-grad)"/>
+  <circle cx="70" cy="500" r="10" fill="url(#rose-grad)"/>
+  <circle cx="77" cy="493" r="3" fill="#D4A843"/>
+  <!-- Random gold specks -->
+  <circle cx="45" cy="200" r="2" fill="#D4A843"/>
+  <circle cx="85" cy="400" r="2" fill="#D4A843"/>
+</svg>

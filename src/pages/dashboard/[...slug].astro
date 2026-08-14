@@ -1,0 +1,232 @@
+---
+// Couple dashboard — RSVP management + wish moderation
+// Mock data for dev; prod: Directus with couple-role JWT
+---
+
+<!DOCTYPE html>
+<html lang="ms">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Dashboard — {Astro.params.slug || 'Undangan'}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Geist:wght@400;500;600&family=Geist+Mono:wght@500;700&display=swap" rel="stylesheet" />
+    <style is:inline>
+      :root { --canvas: #0A0A0A; --surface: #171717; --surface-raised: #202020; --ink: #F0EDE8; --muted: #B8B2AA; --primary: #C8FF00; --accent: #FF6B4A; --border: rgba(240,237,232,0.08); --green: #2C6A54; --rose: #B77B71; }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { font-family: 'Geist', system-ui, sans-serif; font-size: 16px; background: var(--canvas); color: var(--ink); -webkit-font-smoothing: antialiased; }
+      body { min-height: 100dvh; }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-brand">
+        <span class="nav-logo">Nurul & Afiq</span>
+        <span class="nav-sub">Dashboard Undangan</span>
+      </div>
+      <div class="nav-actions">
+        <a href="/nurul-dan-afiq" class="nav-link" target="_blank">Lihat Undangan</a>
+        <a href="/dashboard" class="nav-link nav-logout">Log Keluar</a>
+      </div>
+    </nav>
+
+    <main class="dashboard">
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-num" id="stat-total">0</span>
+          <span class="stat-label">Jumlah RSVP</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num" id="stat-attending">0</span>
+          <span class="stat-label">Hadir</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num" id="stat-not-attending">0</span>
+          <span class="stat-label">Tidak Hadir</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num" id="stat-pending-wishes">0</span>
+          <span class="stat-label">Ucapan Belum Disemak</span>
+        </div>
+      </div>
+
+      <!-- RSVP Table -->
+      <section class="section">
+        <div class="section-header">
+          <h2 class="section-title">Senarai RSVP</h2>
+          <input type="search" class="search-input" id="rsvp-search" placeholder="Cari nama atau telefon..." />
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>Telefon</th>
+                <th>Kehadiran</th>
+                <th>Ucapan</th>
+                <th>Status</th>
+                <th>Tindakan</th>
+              </tr>
+            </thead>
+            <tbody id="rsvp-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // Mock RSVPs with moderation state
+      const mockRsvps = [
+        { id:'1', guest_name:'Ali Ahmad', telephone:'012****789', attendance:'attending', wish:'Semoga bahagia hingga ke syurga! Tahniah Nurul & Afiq.', moderation:'approved', wish_public:true, date:'2026-08-04' },
+        { id:'2', guest_name:'Siti Nurhaliza', telephone:'019****432', attendance:'attending', wish:'Barakallah! Semoga menjadi keluarga sakinah mawaddah warahmah.', moderation:'approved', wish_public:true, date:'2026-08-03' },
+        { id:'3', guest_name:'Ahmad Faizal', telephone:'013****890', attendance:'not_attending', wish:'Maaf tak dapat hadir. Doa dari jauh untuk kalian berdua.', moderation:'pending', wish_public:false, date:'2026-08-02' },
+        { id:'4', guest_name:'Nadia Hassan', telephone:'011****567', attendance:'attending', wish:'Tahniah! Cantik sangat pasangan ni. Jumpa di majlis!', moderation:'pending', wish_public:false, date:'2026-08-04' },
+        { id:'5', guest_name:'Harris Zainal', telephone:'017****234', attendance:'attending', wish:'Finally! Dah lama tunggu wedding korang. Congrats!', moderation:'approved', wish_public:true, date:'2026-08-01' },
+      ];
+
+      function render() {
+        const tbody = document.getElementById('rsvp-tbody')!;
+
+        tbody.innerHTML = mockRsvps.map(r => `
+          <tr>
+            <td><strong>${r.guest_name}</strong><br><span class="text-muted">${r.date}</span></td>
+            <td><code>${r.telephone}</code></td>
+            <td><span class="badge ${r.attendance === 'attending' ? 'badge-attending' : 'badge-not'}">${r.attendance === 'attending' ? 'Hadir' : 'Tidak Hadir'}</span></td>
+            <td class="wish-cell">${r.wish}</td>
+            <td><span class="badge badge-${r.moderation}">${r.moderation === 'approved' ? 'Diluluskan' : r.moderation === 'rejected' ? 'Ditolak' : 'Menunggu'}</span></td>
+            <td class="actions">
+              ${r.moderation === 'pending' ? `
+                <button class="btn-approve" data-id="${r.id}" type="button">✓ Lulus</button>
+                <button class="btn-reject" data-id="${r.id}" type="button">✕ Tolak</button>
+              ` : r.moderation === 'approved' ? `<button class="btn-revoke" data-id="${r.id}" type="button">Tarik Balik</button>` : `<span class="text-muted">—</span>`}
+            </td>
+          </tr>
+        `).join('');
+
+        updateStats();
+        bindModeration();
+      }
+
+      function updateStats() {
+        document.getElementById('stat-total')!.textContent = String(mockRsvps.length);
+        document.getElementById('stat-attending')!.textContent = String(mockRsvps.filter(r => r.attendance === 'attending').length);
+        document.getElementById('stat-not-attending')!.textContent = String(mockRsvps.filter(r => r.attendance === 'not_attending').length);
+        document.getElementById('stat-pending-wishes')!.textContent = String(mockRsvps.filter(r => r.moderation === 'pending').length);
+      }
+
+      function bindModeration() {
+        document.querySelectorAll('.btn-approve').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = (btn as HTMLElement).dataset.id!;
+            const rsvp = mockRsvps.find(r => r.id === id)!;
+            rsvp.moderation = 'approved';
+            rsvp.wish_public = true;
+            render();
+          });
+        });
+        document.querySelectorAll('.btn-reject').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = (btn as HTMLElement).dataset.id!;
+            const rsvp = mockRsvps.find(r => r.id === id)!;
+            rsvp.moderation = 'rejected';
+            rsvp.wish_public = false;
+            render();
+          });
+        });
+        document.querySelectorAll('.btn-revoke').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = (btn as HTMLElement).dataset.id!;
+            const rsvp = mockRsvps.find(r => r.id === id)!;
+            rsvp.moderation = 'pending';
+            rsvp.wish_public = false;
+            render();
+          });
+        });
+      }
+
+      document.getElementById('rsvp-search')?.addEventListener('input', (e) => {
+        const q = (e.target as HTMLInputElement).value.toLowerCase();
+        document.querySelectorAll('#rsvp-tbody tr').forEach(row => {
+          (row as HTMLElement).hidden = q !== '' && !row.textContent!.toLowerCase().includes(q);
+        });
+      });
+
+      render();
+    </script>
+
+    <style>
+      .nav {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        flex-wrap: wrap; gap: 1rem;
+      }
+      .nav-brand { display: flex; align-items: baseline; gap: 0.75rem; }
+      .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--primary); }
+      .nav-sub { font-size: 0.75rem; color: var(--muted); }
+      .nav-actions { display: flex; gap: 0.75rem; }
+      .nav-link { font-size: 0.8rem; color: var(--muted); text-decoration: none; padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px; }
+      .nav-link:hover { color: var(--ink); border-color: var(--muted); }
+      .nav-logout { color: var(--accent); border-color: rgba(255,107,74,0.2); }
+
+      .dashboard { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+      .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2.5rem; }
+      .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; text-align: center; }
+      .stat-num { font-family: 'Playfair Display', serif; font-size: 2.25rem; font-weight: 700; color: var(--primary); display: block; }
+      .stat-label { font-size: 0.75rem; color: var(--muted); }
+
+      .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
+      .section-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+      .search-input {
+        padding: 8px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+        color: var(--ink); font-size: 0.85rem; font-family: inherit; min-width: 200px;
+      }
+      .search-input:focus { outline: none; border-color: var(--primary); }
+
+      .table-wrap { overflow-x: auto; }
+      .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+      .data-table th {
+        text-align: left; padding: 10px 14px;
+        font-family: 'Geist Mono', monospace; font-size: 0.6rem; font-weight: 500; letter-spacing: 0.1em;
+        color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border);
+      }
+      .data-table td { padding: 12px 14px; border-bottom: 1px solid rgba(240,237,232,0.04); vertical-align: top; }
+      .wish-cell { max-width: 280px; line-height: 1.5; }
+
+      .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; }
+      .badge-attending { background: rgba(200,255,0,0.1); color: var(--primary); }
+      .badge-not { background: rgba(184,178,170,0.1); color: var(--muted); }
+      .badge-approved { background: rgba(44,106,84,0.15); color: var(--green); }
+      .badge-pending { background: rgba(217,184,103,0.1); color: #D9B867; }
+      .badge-rejected { background: rgba(183,123,113,0.1); color: var(--rose); }
+
+      .text-muted { color: var(--muted); font-size: 0.7rem; }
+
+      .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+      .btn-approve {
+        padding: 4px 10px; border: none; border-radius: 6px;
+        background: rgba(200,255,0,0.15); color: var(--primary);
+        font-family: 'Geist', sans-serif; font-size: 0.72rem; font-weight: 500; cursor: pointer;
+      }
+      .btn-approve:hover { background: rgba(200,255,0,0.25); }
+      .btn-reject {
+        padding: 4px 10px; border: none; border-radius: 6px;
+        background: rgba(255,107,74,0.1); color: var(--accent);
+        font-family: 'Geist', sans-serif; font-size: 0.72rem; font-weight: 500; cursor: pointer;
+      }
+      .btn-reject:hover { background: rgba(255,107,74,0.2); }
+      .btn-revoke {
+        padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; background: none;
+        color: var(--muted); font-family: 'Geist', sans-serif; font-size: 0.72rem; cursor: pointer;
+      }
+
+      @media (max-width: 640px) {
+        .stats-grid { grid-template-columns: 1fr 1fr; }
+        .data-table { font-size: 0.78rem; }
+        .data-table th, .data-table td { padding: 8px 10px; }
+      }
+    </style>
+  </body>
+</html>

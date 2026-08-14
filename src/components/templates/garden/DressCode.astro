@@ -1,0 +1,170 @@
+---
+/**
+ * DressCode.astro — Full-screen dress code with botanical swatch circles (Layout C: Ethereal Garden)
+ */
+export interface Props {
+  dressCode?: string;
+  palette?: { name: string; hex: string }[];
+}
+
+const { dressCode, palette } = Astro.props;
+if (!palette?.length && !dressCode) return;
+---
+
+<section class="garden-panel garden-dress" id="dresscode" aria-label="Kod Pakaian">
+  <img class="garden-dress__vine garden-dress__vine--left" src="/botanicals/side-vine.svg" alt="" aria-hidden="true" />
+  <img class="garden-dress__vine garden-dress__vine--right" src="/botanicals/side-vine.svg" alt="" aria-hidden="true" />
+
+  <div class="garden-dress__inner">
+    <div class="garden-dress__header">
+      <h2 class="garden-dress__title">Tema Warna</h2>
+      <img class="garden-dress__sprig" src="/botanicals/divider-sprig.svg" alt="" aria-hidden="true" />
+    </div>
+
+    {dressCode && <p class="garden-dress__note">{dressCode}</p>}
+
+    {palette && palette.length > 0 && (
+      <div class="garden-dress__swatches" role="list">
+        {palette.map((color) => (
+          <div class="garden-dress__swatch" role="listitem">
+            <!-- Botanical circle frame -->
+            <div class="garden-dress__swatch-frame">
+              <img class="garden-dress__swatch-wreath" src="/botanicals/wreath.svg" alt="" aria-hidden="true" />
+              <div
+                class="garden-dress__swatch-circle"
+                style={`background-color: ${color.hex}`}
+                aria-label={`Warna ${color.name}: ${color.hex}`}
+              ></div>
+            </div>
+            <p class="garden-dress__swatch-name">{color.name}</p>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .garden-dress {
+    background: linear-gradient(170deg, #FDF8F0 0%, #F0EAE0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    height: 100dvh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+  }
+
+  .garden-dress__vine {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: clamp(45px, 9vw, 85px);
+    opacity: 0.35;
+    pointer-events: none;
+    object-fit: contain;
+    z-index: 1;
+  }
+
+  .garden-dress__vine--left { left: 0; }
+  .garden-dress__vine--right { right: 0; transform: scaleX(-1); }
+
+  .garden-dress__inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 1.5rem clamp(1rem, 8vw, 4rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.75rem, 2vh, 1.3rem);
+    max-width: 540px;
+    width: 100%;
+  }
+
+  .garden-dress__header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .garden-dress__title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.5rem, 3.8vw, 2.1rem);
+    color: #5C7A54;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .garden-dress__sprig {
+    width: clamp(60px, 14vw, 100px);
+    opacity: 0.55;
+  }
+
+  .garden-dress__note {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(0.82rem, 1.8vw, 0.94rem);
+    color: #3D3D3D;
+    line-height: 1.65;
+    margin: 0;
+    max-width: 420px;
+    opacity: 0.88;
+  }
+
+  .garden-dress__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(0.75rem, 2.5vw, 1.25rem);
+    margin-top: 0.2rem;
+  }
+
+  .garden-dress__swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .garden-dress__swatch-frame {
+    position: relative;
+    width: clamp(54px, 12vw, 76px);
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .garden-dress__swatch-wreath {
+    position: absolute;
+    inset: -6px;
+    width: calc(100% + 12px);
+    height: calc(100% + 12px);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .garden-dress__swatch-circle {
+    width: 76%;
+    height: 76%;
+    border-radius: 50%;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+    border: 2px solid #FDF8F0;
+    flex-shrink: 0;
+  }
+
+  .garden-dress__swatch-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(0.78rem, 1.8vw, 0.88rem);
+    color: #3D3D3D;
+    margin: 0;
+    text-align: center;
+    font-weight: 500;
+  }
+</style>

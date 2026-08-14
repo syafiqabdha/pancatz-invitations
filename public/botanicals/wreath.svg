@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" aria-hidden="true">
+  <defs>
+    <linearGradient id="rose-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8C4B8"/>
+      <stop offset="100%" stop-color="#C4988A"/>
+    </linearGradient>
+    <linearGradient id="leaf-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8FA98A"/>
+      <stop offset="100%" stop-color="#5C7A54"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(150, 150)">
+    <!-- Wreath Circle Path -->
+    <circle cx="0" cy="0" r="120" fill="none" stroke="#5C7A54" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
+    
+    <!-- Top Rose -->
+    <g transform="translate(0, -120)">
+      <circle cx="0" cy="0" r="15" fill="url(#rose-grad)"/>
+      <path d="M 10 0 C 25 -10, 30 10, 15 15 Z" fill="url(#leaf-grad)"/>
+      <path d="M -10 0 C -25 -10, -30 10, -15 15 Z" fill="url(#leaf-grad)"/>
+      <circle cx="0" cy="0" r="4" fill="#D4A843"/>
+    </g>
+    <!-- Right Rose -->
+    <g transform="translate(120, 0)">
+      <circle cx="0" cy="0" r="15" fill="url(#rose-grad)"/>
+      <path d="M 0 10 C 10 25, -10 30, -15 15 Z" fill="url(#leaf-grad)"/>
+      <path d="M 0 -10 C 10 -25, -10 -30, -15 -15 Z" fill="url(#leaf-grad)"/>
+      <circle cx="0" cy="0" r="4" fill="#D4A843"/>
+    </g>
+    <!-- Bottom Rose -->
+    <g transform="translate(0, 120)">
+      <circle cx="0" cy="0" r="15" fill="url(#rose-grad)"/>
+      <path d="M 10 0 C 25 10, 30 -10, 15 -15 Z" fill="url(#leaf-grad)"/>
+      <path d="M -10 0 C -25 10, -30 -10, -15 -15 Z" fill="url(#leaf-grad)"/>
+      <circle cx="0" cy="0" r="4" fill="#D4A843"/>
+    </g>
+    <!-- Left Rose -->
+    <g transform="translate(-120, 0)">
+      <circle cx="0" cy="0" r="15" fill="url(#rose-grad)"/>
+      <path d="M 0 10 C -10 25, 10 30, 15 15 Z" fill="url(#leaf-grad)"/>
+      <path d="M 0 -10 C -10 -25, 10 -30, 15 -15 Z" fill="url(#leaf-grad)"/>
+      <circle cx="0" cy="0" r="4" fill="#D4A843"/>
+    </g>
+
+    <!-- Additional scattered leaves -->
+    <g transform="rotate(45)">
+      <g transform="translate(120, 0)">
+         <path d="M 0 0 C 15 -10, 15 10, 0 5 Z" fill="url(#leaf-grad)"/>
+      </g>
+      <g transform="translate(-120, 0)">
+         <path d="M 0 0 C -15 -10, -15 10, 0 5 Z" fill="url(#leaf-grad)"/>
+      </g>
+      <g transform="translate(0, 120)">
+         <path d="M 0 0 C 10 15, -10 15, -5 0 Z" fill="url(#leaf-grad)"/>
+      </g>
+      <g transform="translate(0, -120)">
+         <path d="M 0 0 C 10 -15, -10 -15, -5 0 Z" fill="url(#leaf-grad)"/>
+      </g>
+    </g>
+  </g>
+</svg>

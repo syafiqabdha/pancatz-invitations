@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 60" aria-hidden="true">
+  <defs>
+    <linearGradient id="leaf-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8FA98A"/>
+      <stop offset="100%" stop-color="#5C7A54"/>
+    </linearGradient>
+  </defs>
+  <!-- Central horizontal line -->
+  <path d="M 50 30 L 150 30" stroke="#5C7A54" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 250 30 L 350 30" stroke="#5C7A54" stroke-width="2" stroke-linecap="round"/>
+  <!-- Center Sprig -->
+  <g transform="translate(200, 30)">
+    <!-- Leaves left -->
+    <path d="M -10 0 C -25 -15, -40 0, -20 10 Z" fill="url(#leaf-grad)"/>
+    <path d="M -10 0 C -25 15, -40 0, -20 -10 Z" fill="url(#leaf-grad)"/>
+    <!-- Leaves right -->
+    <path d="M 10 0 C 25 -15, 40 0, 20 10 Z" fill="url(#leaf-grad)"/>
+    <path d="M 10 0 C 25 15, 40 0, 20 -10 Z" fill="url(#leaf-grad)"/>
+    <!-- Center dots -->
+    <circle cx="0" cy="0" r="5" fill="#D4A843"/>
+    <circle cx="-15" cy="-10" r="3" fill="#D4A843"/>
+    <circle cx="15" cy="10" r="3" fill="#D4A843"/>
+  </g>
+</svg>

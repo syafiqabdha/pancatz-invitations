@@ -1,0 +1,144 @@
+---
+// src/pages/dashboard/index.astro — Couple login page
+---
+
+<!DOCTYPE html>
+<html lang="ms">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Log Masuk — Dashboard Pasangan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Geist:wght@400;500;600&family=Geist+Mono:wght@500;700&display=swap" rel="stylesheet" />
+    <style is:inline>
+      :root { --canvas: #0A0A0A; --surface: #171717; --ink: #F0EDE8; --muted: #B8B2AA; --primary: #C8FF00; --accent: #FF6B4A; --border: rgba(240,237,232,0.10); }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { font-family: 'Geist', system-ui, sans-serif; font-size: 16px; background: var(--canvas); color: var(--ink); -webkit-font-smoothing: antialiased; }
+      body { min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+    </style>
+  </head>
+  <body>
+    <div class="login-card">
+      <span class="login-label">Dashboard Pasangan</span>
+      <h1 class="login-title">Log Masuk</h1>
+      <p class="login-desc">Masukkan ID Pesanan dan kata laluan yang diberikan kepada anda.</p>
+
+      <form id="login-form" class="login-form" onsubmit="var o=document.querySelector('#login-form input[name=order_id]').value;var p=document.querySelector('#login-form input[name=password]').value;if(o==='ORD-2026-001'&&p==='nurulafiq2026'){location.href='/dashboard/nurul-dan-afiq'}else{var e=document.getElementById('login-error');e.hidden=false;e.textContent='ID Pesanan atau kata laluan tidak sah.'}return false;">
+        <label class="login-field">
+          <span class="login-field-label">ID Pesanan</span>
+          <input type="text" name="order_id" class="login-input" required placeholder="ORD-2026-001" autocomplete="username" />
+        </label>
+        <label class="login-field">
+          <span class="login-field-label">Kata Laluan</span>
+          <input type="password" name="password" class="login-input" required placeholder="••••••••" autocomplete="current-password" />
+        </label>
+        <button type="submit" class="login-btn" id="login-btn">Log Masuk</button>
+        <p class="login-error" id="login-error" hidden></p>
+      </form>
+
+      <p class="login-footer">
+        <a href="/" class="login-link">← Kembali ke katalog</a>
+      </p>
+    </div>
+
+    <script>
+      const form = document.getElementById('login-form') as HTMLFormElement;
+      const btn = document.getElementById('login-btn')! as HTMLButtonElement;
+      const error = document.getElementById('login-error')!;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        btn.disabled = true;
+        btn.textContent = 'Log masuk...';
+        error.hidden = true;
+
+        const data = new FormData(form);
+        const orderId = data.get('order_id') as string;
+        const password = data.get('password') as string;
+
+        // Dev auth: mock check
+        if (orderId === 'ORD-2026-001' && password === 'nurulafiq2026') {
+          window.location.href = '/dashboard/nurul-dan-afiq';
+        } else {
+          error.textContent = 'ID Pesanan atau kata laluan tidak sah.';
+          error.hidden = false;
+          btn.disabled = false;
+          btn.textContent = 'Log Masuk';
+        }
+      });
+    </script>
+
+    <style>
+      .login-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: clamp(2rem, 4vw, 3rem);
+        max-width: 420px;
+        width: 100%;
+      }
+      .login-label {
+        font-family: 'Geist Mono', monospace;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        color: var(--muted);
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 0.75rem;
+      }
+      .login-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem;
+        letter-spacing: -0.02em;
+      }
+      .login-desc {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 1.75rem;
+      }
+      .login-form { display: flex; flex-direction: column; gap: 1rem; }
+      .login-field { display: flex; flex-direction: column; gap: 4px; }
+      .login-field-label {
+        font-family: 'Geist Mono', monospace;
+        font-size: 0.6rem;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+      .login-input {
+        padding: 10px 14px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--ink);
+        font-size: 0.9rem;
+        font-family: 'Geist', sans-serif;
+        transition: border-color 0.2s;
+      }
+      .login-input:focus { outline: none; border-color: var(--primary); }
+      .login-btn {
+        padding: 12px;
+        background: var(--primary);
+        color: var(--canvas);
+        border: none;
+        border-radius: 12px;
+        font-family: 'Geist', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+        transition: background 0.2s;
+      }
+      .login-btn:hover { background: #D4FF1A; }
+      .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+      .login-error { font-size: 0.8rem; color: var(--accent); text-align: center; }
+      .login-footer { margin-top: 1.5rem; text-align: center; }
+      .login-link { font-size: 0.8rem; color: var(--muted); text-decoration: none; }
+      .login-link:hover { color: var(--ink); }
+    </style>
+  </body>
+</html>

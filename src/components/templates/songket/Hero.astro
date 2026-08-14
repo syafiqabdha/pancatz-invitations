@@ -1,0 +1,317 @@
+---
+/**
+ * src/components/templates/songket/Hero.astro
+ * Hero section with couple names, live countdown progress rings,
+ * subtle background mandala ornament, and "Save to Calendar" button.
+ */
+import type { Invitation } from '../../../lib/directus';
+
+interface Props {
+  inv: Invitation;
+}
+
+const { inv } = Astro.props;
+
+const eventDate = new Date(inv.event_date_time);
+
+// Build Google Calendar TEMPLATE URL
+const calTitle = encodeURIComponent(`Walimatulurus ${inv.couple_name_1} & ${inv.couple_name_2}`);
+const calStart = eventDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+const calEnd = new Date(eventDate.getTime() + 4 * 3600 * 1000)
+  .toISOString()
+  .replace(/[-:]/g, '')
+  .split('.')[0] + 'Z';
+const calLocation = encodeURIComponent(inv.venue_address ?? inv.venue_name ?? '');
+const calDetails = encodeURIComponent(inv.calendar_details ?? `Walimatulurus ${inv.couple_name_1} & ${inv.couple_name_2}`);
+const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calTitle}&dates=${calStart}/${calEnd}&location=${calLocation}&details=${calDetails}`;
+
+// SVG Ring geometric dimensions
+const R = 44;
+const CIRCUMFERENCE = Math.round(2 * Math.PI * R * 100) / 100;
+---
+
+<section
+  class="hero section-reveal"
+  id="hero-section"
+  aria-label="Kiraan Masa & Butiran Acara"
+  data-event-iso={inv.event_date_time}
+  data-circumference={CIRCUMFERENCE}
+>
+  <!-- Background mandala ornament from /ornaments/ -->
+  <img
+    src="/ornaments/mandala-top.svg"
+    alt=""
+    aria-hidden="true"
+    class="hero-mandala"
+    width="480"
+    height="480"
+    loading="lazy"
+  />
+
+  <div class="hero-inner">
+    <h2 class="hero-names">
+      {inv.couple_name_1}
+      <span class="hero-amp">&amp;</span>
+      {inv.couple_name_2}
+    </h2>
+    <p class="hero-subtitle">Kiraan Masa Menuju Hari Bahagia</p>
+
+    <!-- Countdown rings -->
+    <div class="countdown-wrap stagger-reveal" id="countdown-wrap" aria-live="polite">
+      {(['days', 'hours', 'minutes'] as const).map((unit) => (
+        <div class="countdown-unit stagger-child">
+          <svg
+            class="countdown-svg"
+            viewBox="0 0 100 100"
+            width="100"
+            height="100"
+            aria-hidden="true"
+          >
+            <!-- Background track -->
+            <circle
+              cx="50"
+              cy="50"
+              r={R}
+              fill="none"
+              stroke="var(--jade)"
+              stroke-width="3.5"
+              opacity="0.3"
+            />
+            <!-- Progress indicator -->
+            <circle
+              class="countdown-ring"
+              cx="50"
+              cy="50"
+              r={R}
+              fill="none"
+              stroke="var(--antique-gold)"
+              stroke-width="3.5"
+              stroke-linecap="round"
+              transform="rotate(-90 50 50)"
+              data-circumference={CIRCUMFERENCE}
+              data-unit={unit}
+            />
+          </svg>
+          <div class="countdown-text">
+            <span class="countdown-value" data-unit={unit}>--</span>
+            <span class="countdown-label">
+              {unit === 'days' ? 'Hari' : unit === 'hours' ? 'Jam' : 'Minit'}
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Save to Calendar Button -->
+    <a
+      href={calUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="hero-cal-btn"
+      id="save-calendar-btn"
+      aria-label="Simpan ke Google Calendar"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+      >
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      Simpan ke Kalendar
+    </a>
+  </div>
+</section>
+
+<script>
+  function setupCountdown() {
+    const hero = document.getElementById('hero-section');
+    if (!hero) return;
+
+    const eventIso = hero.getAttribute('data-event-iso');
+    const circumference = parseFloat(hero.getAttribute('data-circumference') ?? '276.46');
+    if (!eventIso) return;
+
+    const targetTime = new Date(eventIso).getTime();
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function update() {
+      const now = Date.now();
+      const diff = Math.max(0, targetTime - now);
+
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+
+      const maxValues: Record<string, number> = { days: 365, hours: 24, minutes: 60 };
+      const currentValues: Record<string, number> = { days, hours, minutes };
+
+      document.querySelectorAll<HTMLElement>('.countdown-value').forEach((el) => {
+        const unit = el.getAttribute('data-unit');
+        if (unit && unit in currentValues) {
+          el.textContent = String(currentValues[unit]).padStart(2, '0');
+        }
+      });
+
+      if (!prefersReduced) {
+        document.querySelectorAll<SVGCircleElement>('.countdown-ring').forEach((ring) => {
+          const unit = ring.getAttribute('data-unit');
+          if (!unit || !(unit in maxValues)) return;
+          const ratio = Math.min(1, currentValues[unit] / maxValues[unit]);
+          const offset = circumference - ratio * circumference;
+          ring.style.strokeDasharray = `${circumference}`;
+          ring.style.strokeDashoffset = `${offset}`;
+        });
+      }
+    }
+
+    update();
+    setInterval(update, 10000);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupCountdown);
+  } else {
+    setupCountdown();
+  }
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    padding: clamp(4rem, 10vw, 7rem) 1.5rem;
+    background: var(--deep-green);
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero-mandala {
+    position: absolute;
+    top: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(320px, 75vw, 500px);
+    opacity: 0.09;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 1.8rem);
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .hero-names {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(2.2rem, 7vw, 3.6rem);
+    color: var(--ivory);
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  .hero-amp {
+    font-size: 0.65em;
+    color: var(--antique-gold);
+    margin: 0 0.25em;
+    font-style: normal;
+  }
+
+  .hero-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(0.72rem, 2vw, 0.8rem);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Countdown */
+  .countdown-wrap {
+    display: flex;
+    gap: clamp(1.2rem, 4vw, 2.8rem);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 0.5rem 0;
+  }
+
+  .countdown-unit {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .countdown-svg {
+    position: absolute;
+    inset: 0;
+  }
+
+  .countdown-text {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .countdown-value {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--light-gold);
+    line-height: 1;
+  }
+
+  .countdown-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* Calendar CTA */
+  .hero-cal-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55em;
+    padding: 0.7em 1.6em;
+    border: 1px solid var(--light-jade);
+    color: var(--ivory);
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    border-radius: 2px;
+    transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease, transform 0.2s ease;
+    margin-top: 0.5rem;
+  }
+
+  .hero-cal-btn:hover {
+    border-color: var(--antique-gold);
+    color: var(--light-gold);
+    background: rgba(217, 184, 103, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .hero-cal-btn:active {
+    transform: translateY(0);
+  }
+</style>

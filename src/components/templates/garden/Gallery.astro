@@ -1,0 +1,294 @@
+---
+/**
+ * Gallery.astro — Full-screen organic masonry gallery with lightbox (Layout C: Ethereal Garden)
+ */
+export interface Props {
+  photos?: { id: string; alt?: string; file?: { id: string; filename_download?: string } }[];
+}
+
+const { photos } = Astro.props;
+
+// Placeholder colors matching design tokens
+const placeholders = [
+  { color: '#E8C4B8', label: 'Foto 1' },
+  { color: '#8FA98A', label: 'Foto 2' },
+  { color: '#C5B8D4', label: 'Foto 3' },
+  { color: '#F5D5C8', label: 'Foto 4' },
+  { color: '#D4A843', label: 'Foto 5' },
+  { color: '#C4988A', label: 'Foto 6' },
+];
+
+const items = photos?.length
+  ? photos.slice(0, 6).map((p, i) => {
+      const fileId = p.file?.id || p.id;
+      return {
+        src: `/directus/assets/${fileId}`,
+        alt: p.alt ?? `Foto Kenangan ${i + 1}`,
+        color: null,
+      };
+    })
+  : placeholders.map((p) => ({ src: null, alt: p.label, color: p.color }));
+---
+
+<section class="garden-panel garden-gallery" id="gallery" aria-label="Galeri Foto">
+  <div class="garden-gallery__inner">
+    <div class="garden-gallery__header">
+      <h2 class="garden-gallery__title">Galeri Kenangan</h2>
+      <img class="garden-gallery__sprig" src="/botanicals/divider-sprig.svg" alt="" aria-hidden="true" />
+    </div>
+
+    <div class="garden-gallery__grid" role="list">
+      {items.map((item, i) => (
+        <button
+          class="garden-gallery__thumb"
+          data-index={i}
+          aria-label={`Buka foto: ${item.alt}`}
+          style={`--rot: ${(i % 2 === 0 ? 1 : -1) * (0.8 + (i * 0.4) % 1.6)}deg`}
+          type="button"
+          role="listitem"
+        >
+          {item.src ? (
+            <img src={item.src} alt={item.alt} loading="lazy" />
+          ) : (
+            <div class="garden-gallery__placeholder" style={`background: ${item.color}`}>
+              <span class="garden-gallery__ph-label">{item.alt}</span>
+            </div>
+          )}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div class="garden-lightbox" id="garden-lightbox" role="dialog" aria-modal="true" aria-label="Paparan Foto" hidden>
+    <button class="garden-lightbox__close" id="garden-lb-close" type="button" aria-label="Tutup Paparan Foto">&#10005;</button>
+    <div class="garden-lightbox__img-wrap">
+      <img class="garden-lightbox__img" id="garden-lb-img" src="" alt="" />
+      <div class="garden-lightbox__fallback-box" id="garden-lb-fallback" hidden>
+        <span class="garden-lightbox__fallback-text" id="garden-lb-fallback-text"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const thumbs = document.querySelectorAll<HTMLButtonElement>('.garden-gallery__thumb');
+  const lb = document.getElementById('garden-lightbox') as HTMLDivElement | null;
+  const lbImg = document.getElementById('garden-lb-img') as HTMLImageElement | null;
+  const lbClose = document.getElementById('garden-lb-close') as HTMLButtonElement | null;
+  const lbFallback = document.getElementById('garden-lb-fallback') as HTMLDivElement | null;
+  const lbFallbackText = document.getElementById('garden-lb-fallback-text') as HTMLSpanElement | null;
+
+  thumbs.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (!lb) return;
+      const img = btn.querySelector('img');
+      const ph = btn.querySelector('.garden-gallery__placeholder');
+
+      if (img && lbImg) {
+        lbImg.src = img.src;
+        lbImg.alt = img.alt;
+        lbImg.hidden = false;
+        if (lbFallback) lbFallback.hidden = true;
+      } else if (ph && lbFallback && lbFallbackText) {
+        if (lbImg) lbImg.hidden = true;
+        lbFallback.hidden = false;
+        lbFallback.style.background = (ph as HTMLElement).style.background;
+        lbFallbackText.textContent = btn.getAttribute('aria-label')?.replace('Buka foto: ', '') ?? 'Foto';
+      }
+
+      lb.hidden = false;
+      lb.focus();
+    });
+  });
+
+  function closeLightbox(): void {
+    if (lb) lb.hidden = true;
+  }
+
+  lbClose?.addEventListener('click', closeLightbox);
+  lb?.addEventListener('click', (e) => {
+    if (e.target === lb) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lb && !lb.hidden) closeLightbox();
+  });
+</script>
+
+<style>
+  .garden-gallery {
+    background: #FDF8F0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1rem;
+    overflow: hidden;
+    height: 100dvh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  .garden-gallery__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.75rem, 2vh, 1.4rem);
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .garden-gallery__header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .garden-gallery__title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.5rem, 3.8vw, 2.1rem);
+    color: #5C7A54;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .garden-gallery__sprig {
+    width: clamp(60px, 14vw, 100px);
+    opacity: 0.55;
+  }
+
+  .garden-gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(0.4rem, 1.5vw, 0.75rem);
+    width: 100%;
+  }
+
+  .garden-gallery__thumb {
+    border: none;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+    transform: rotate(var(--rot, 0deg));
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .garden-gallery__thumb:hover,
+  .garden-gallery__thumb:focus-visible {
+    transform: rotate(0deg) scale(1.05);
+    box-shadow: 0 8px 24px rgba(92, 122, 84, 0.25);
+    outline: none;
+    z-index: 5;
+  }
+
+  .garden-gallery__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .garden-gallery__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    box-sizing: border-box;
+  }
+
+  .garden-gallery__ph-label {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.75rem;
+    color: rgba(61, 61, 61, 0.7);
+    text-align: center;
+    font-weight: 500;
+  }
+
+  /* Lightbox */
+  .garden-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 350;
+    background: rgba(45, 45, 45, 0.88);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: lb-in 0.25s ease;
+  }
+
+  .garden-lightbox[hidden] {
+    display: none;
+  }
+
+  @keyframes lb-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .garden-lightbox__close {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.2rem;
+    background: rgba(253, 248, 240, 0.2);
+    border: 1.5px solid rgba(253, 248, 240, 0.6);
+    color: #FDF8F0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .garden-lightbox__close:hover {
+    background: rgba(253, 248, 240, 0.4);
+  }
+
+  .garden-lightbox__img-wrap {
+    max-width: min(88vw, 480px);
+    max-height: 75dvh;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  }
+
+  .garden-lightbox__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .garden-lightbox__fallback-box {
+    width: clamp(240px, 75vw, 360px);
+    height: clamp(320px, 60vh, 440px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+  }
+
+  .garden-lightbox__fallback-text {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 1.4rem;
+    color: #3D3D3D;
+  }
+</style>

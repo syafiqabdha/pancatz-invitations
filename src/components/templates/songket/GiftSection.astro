@@ -1,0 +1,280 @@
+---
+/**
+ * src/components/templates/songket/GiftSection.astro
+ * Wedding gift & salam kerukunan card with DuitNow QR placeholder,
+ * bank details, and copy-to-clipboard button.
+ */
+import type { Invitation } from '../../../lib/directus';
+
+interface Props {
+  inv: Invitation;
+}
+
+const { inv } = Astro.props;
+
+const duitnowNumber = '0123456789';
+const bankName = 'Maybank';
+const accountName = `${inv.couple_name_1} & ${inv.couple_name_2}`;
+---
+
+{inv.gift_enabled && (
+  <section class="gift section-reveal" aria-label="Hadiah &amp; Ingatan Kasih">
+    <div class="gift-inner">
+      <p class="gift-label">Hadiah &amp; Doa Restu</p>
+      <h2 class="gift-heading">Pemberian</h2>
+
+      {inv.gift_details && (
+        <p class="gift-desc">{inv.gift_details}</p>
+      )}
+
+      <div class="gift-card">
+        <!-- QR placeholder -->
+        <div class="gift-qr" aria-label="Kod QR DuitNow">
+          <div class="gift-qr-frame">
+            <svg width="84" height="84" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+              <!-- QR position squares -->
+              <rect x="4" y="4" width="28" height="28" rx="2" fill="var(--antique-gold)" opacity="0.75"/>
+              <rect x="48" y="4" width="28" height="28" rx="2" fill="var(--antique-gold)" opacity="0.75"/>
+              <rect x="4" y="48" width="28" height="28" rx="2" fill="var(--antique-gold)" opacity="0.75"/>
+              <rect x="10" y="10" width="16" height="16" rx="1" fill="var(--midnight)"/>
+              <rect x="54" y="10" width="16" height="16" rx="1" fill="var(--midnight)"/>
+              <rect x="10" y="54" width="16" height="16" rx="1" fill="var(--midnight)"/>
+              <rect x="14" y="14" width="8" height="8" rx="1" fill="var(--light-gold)"/>
+              <rect x="58" y="14" width="8" height="8" rx="1" fill="var(--light-gold)"/>
+              <rect x="14" y="58" width="8" height="8" rx="1" fill="var(--light-gold)"/>
+              <!-- Decorative matrix bits -->
+              <rect x="36" y="4" width="8" height="8" rx="1" fill="var(--antique-gold)" opacity="0.6"/>
+              <rect x="48" y="36" width="8" height="8" rx="1" fill="var(--antique-gold)" opacity="0.6"/>
+              <rect x="36" y="48" width="8" height="8" rx="1" fill="var(--antique-gold)" opacity="0.6"/>
+              <rect x="36" y="60" width="8" height="8" rx="1" fill="var(--antique-gold)" opacity="0.6"/>
+              <rect x="60" y="48" width="8" height="8" rx="1" fill="var(--antique-gold)" opacity="0.6"/>
+              <rect x="60" y="60" width="8" height="8" rx="1" fill="var(--antique-gold)" opacity="0.6"/>
+              <rect x="4" y="36" width="8" height="8" rx="1" fill="var(--antique-gold)" opacity="0.6"/>
+              <rect x="16" y="36" width="8" height="8" rx="1" fill="var(--antique-gold)" opacity="0.6"/>
+            </svg>
+          </div>
+          <span class="gift-qr-label">Imbas DuitNow QR</span>
+        </div>
+
+        <!-- Bank details -->
+        <div class="gift-bank">
+          <div class="gift-row">
+            <span class="gift-row-label">Bank</span>
+            <span class="gift-row-value">{bankName}</span>
+          </div>
+          <div class="gift-row">
+            <span class="gift-row-label">Nama Akaun</span>
+            <span class="gift-row-value">{accountName}</span>
+          </div>
+          <div class="gift-row gift-row--number">
+            <span class="gift-row-label">No. DuitNow</span>
+            <span class="gift-row-value gift-number" id="duitnow-number">{duitnowNumber}</span>
+          </div>
+          <button
+            class="gift-copy-btn"
+            id="copy-duitnow-btn"
+            type="button"
+            data-copy={duitnowNumber}
+            aria-label="Salin nombor akaun DuitNow"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="copy-btn-text">Salin Nombor</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+)}
+
+<script>
+  function setupGiftCopy() {
+    const btn = document.getElementById('copy-duitnow-btn') as HTMLButtonElement | null;
+    const label = document.getElementById('copy-btn-text');
+    if (!btn || !label) return;
+
+    btn.addEventListener('click', async () => {
+      const text = btn.getAttribute('data-copy') ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        label.textContent = '✓ Disalin';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          label.textContent = 'Salin Nombor';
+          btn.classList.remove('copied');
+        }, 2500);
+      } catch {
+        label.textContent = 'Gagal Salin';
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupGiftCopy);
+  } else {
+    setupGiftCopy();
+  }
+</script>
+
+<style>
+  .gift {
+    padding: clamp(3.5rem, 8vw, 6rem) 1.5rem;
+    background: var(--midnight);
+    text-align: center;
+  }
+
+  .gift-inner {
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+  }
+
+  .gift-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--antique-gold);
+  }
+
+  .gift-heading {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    color: var(--ivory);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .gift-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(0.85rem, 2.2vw, 0.95rem);
+    color: var(--muted);
+    line-height: 1.75;
+    max-width: 52ch;
+    text-align: center;
+  }
+
+  /* Card */
+  .gift-card {
+    width: 100%;
+    background: rgba(44, 106, 84, 0.12);
+    border: 1px solid rgba(217, 184, 103, 0.22);
+    border-radius: 4px;
+    padding: clamp(1.5rem, 4vw, 2.25rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* QR */
+  .gift-qr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .gift-qr-frame {
+    width: 120px;
+    height: 120px;
+    border: 1.5px solid rgba(217, 184, 103, 0.35);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(7, 29, 24, 0.75);
+    padding: 16px;
+  }
+
+  .gift-qr-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Bank rows */
+  .gift-bank {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .gift-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(184, 200, 190, 0.1);
+  }
+
+  .gift-row-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .gift-row-value {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.05rem;
+    color: var(--ivory);
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .gift-number {
+    letter-spacing: 0.08em;
+    color: var(--light-gold);
+  }
+
+  /* Copy button */
+  .gift-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55em;
+    margin-top: 0.5rem;
+    padding: 0.7em 1.6em;
+    background: transparent;
+    border: 1px solid var(--antique-gold);
+    color: var(--antique-gold);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
+    align-self: center;
+  }
+
+  .gift-copy-btn:hover {
+    background: rgba(217, 184, 103, 0.12);
+    color: var(--light-gold);
+    border-color: var(--light-gold);
+    transform: translateY(-1px);
+  }
+
+  .gift-copy-btn:active {
+    transform: translateY(0);
+  }
+
+  .gift-copy-btn.copied {
+    border-color: #6abf7b;
+    color: #6abf7b;
+    background: rgba(106, 191, 123, 0.1);
+  }
+</style>

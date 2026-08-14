@@ -1,0 +1,73 @@
+---
+/**
+ * src/pages/songket/[...slug].astro
+ * Layout A — Songket Manuscript (Classic Scroll) invitation page
+ */
+import { getInvitationBySlug, type Invitation } from '../../lib/directus';
+import { mockInvitation } from '../../data/mock-invitation';
+import Cover from '../../components/templates/songket/Cover.astro';
+import Hero from '../../components/templates/songket/Hero.astro';
+import StorySection from '../../components/templates/songket/StorySection.astro';
+import VerseSection from '../../components/templates/songket/VerseSection.astro';
+import Venue from '../../components/templates/songket/Venue.astro';
+import Schedule from '../../components/templates/songket/Schedule.astro';
+import Gallery from '../../components/templates/songket/Gallery.astro';
+import DressCode from '../../components/templates/songket/DressCode.astro';
+import GiftSection from '../../components/templates/songket/GiftSection.astro';
+import RsvpSection from '../../components/templates/songket/RsvpSection.astro';
+import RsvpModal from '../../components/templates/songket/RsvpModal.astro';
+import Footer from '../../components/templates/songket/Footer.astro';
+import '../../styles/songket-global.css';
+
+export const prerender = false;
+const { slug } = Astro.params;
+const slugStr = Array.isArray(slug) ? slug.join('/') : (slug ?? '');
+const useMock = !import.meta.env.DIRECTUS_URL || slugStr === 'preview' || slugStr === 'nurul-dan-afiq';
+const inv: Invitation = useMock ? mockInvitation : ((await getInvitationBySlug(slugStr)) ?? mockInvitation);
+const title = `Walimatulurus ${inv.couple_name_1} & ${inv.couple_name_2}`;
+const desc = `Jemputan ke majlis perkahwinan ${inv.couple_name_1} dan ${inv.couple_name_2}.`;
+---
+<!DOCTYPE html>
+<html lang="ms">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={desc} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={desc} />
+    <meta name="theme-color" content="#071D18" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital@0;1&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <noscript>
+      <style>#cover { display: none !important; } #main-content { visibility: visible !important; opacity: 1 !important; }</style>
+    </noscript>
+    <Cover inv={inv} />
+    <main id="main-content" aria-label="Kandungan Undangan" style="visibility:hidden;opacity:0">
+      <Hero inv={inv} />
+      <StorySection inv={inv} />
+      <VerseSection inv={inv} />
+      <Venue inv={inv} />
+      <Schedule inv={inv} />
+      <Gallery inv={inv} />
+      <DressCode inv={inv} />
+      <GiftSection inv={inv} />
+      <RsvpSection inv={inv} />
+      <Footer inv={inv} />
+    </main>
+    <RsvpModal inv={inv} />
+    <script>
+      import { initSongketAnimations, animateCoverOpen } from '../../lib/invitation-animations-songket';
+      initSongketAnimations();
+      const openBtn = document.getElementById('buka-undangan-btn');
+      const cover = document.getElementById('cover');
+      const main = document.getElementById('main-content');
+      if (openBtn && cover && main) {
+        openBtn.addEventListener('click', () => animateCoverOpen(cover, main));
+      }
+    </script>
+  </body>
+</html>

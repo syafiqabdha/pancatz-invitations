@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" aria-hidden="true">
+  <defs>
+    <linearGradient id="petal-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDF8F0"/>
+      <stop offset="100%" stop-color="#E8C4B8"/>
+    </linearGradient>
+  </defs>
+  <!-- Scattered petals -->
+  <g fill="url(#petal-grad)" opacity="0.6">
+    <path d="M 100 100 Q 120 90, 110 120 Q 90 110, 100 100 Z" transform="rotate(15 100 100)"/>
+    <path d="M 500 150 Q 520 140, 510 170 Q 490 160, 500 150 Z" transform="rotate(-25 500 150)"/>
+    <path d="M 200 300 Q 220 290, 210 320 Q 190 310, 200 300 Z" transform="rotate(45 200 300)"/>
+    <path d="M 400 450 Q 420 440, 410 470 Q 390 460, 400 450 Z" transform="rotate(75 400 450)"/>
+    <path d="M 150 600 Q 170 590, 160 620 Q 140 610, 150 600 Z" transform="rotate(-15 150 600)"/>
+    <path d="M 450 700 Q 470 690, 460 720 Q 440 710, 450 700 Z" transform="rotate(85 450 700)"/>
+    <path d="M 300 150 Q 320 140, 310 170 Q 290 160, 300 150 Z" transform="rotate(-65 300 150)"/>
+    <path d="M 350 600 Q 370 590, 360 620 Q 340 610, 350 600 Z" transform="rotate(25 350 600)"/>
+  </g>
+</svg>

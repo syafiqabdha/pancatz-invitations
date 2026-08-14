@@ -1,0 +1,163 @@
+---
+/**
+ * DressCode.astro — Layout B Noir (Quiet Luxury)
+ * Minimal circular color swatches with labels. No heavy borders, ultra-clean.
+ */
+import type { Invitation } from '../../../lib/directus';
+
+interface Props {
+  invitation: Invitation;
+}
+
+const { invitation } = Astro.props;
+
+const defaultPalette = [
+  { name: 'Sage', hex: '#A8B5A0' },
+  { name: 'Blush', hex: '#E8C4B8' },
+  { name: 'Cream', hex: '#FAF8F5' },
+  { name: 'Gold', hex: '#C5A55A' },
+  { name: 'Charcoal', hex: '#2C2C2C' },
+];
+
+const note = invitation.dress_code ||
+  'Kami mengalu-alukan tetamu untuk berpakaian dalam tema warna lembut dan elegan. Elakkan warna putih sebagai menghormati pengantin.';
+const palette = (invitation.dress_code_palette && invitation.dress_code_palette.length > 0)
+  ? invitation.dress_code_palette
+  : defaultPalette;
+---
+
+<section class="dresscode" aria-label="Tema Pakaian & Dress Code" data-reveal="left">
+  <div class="dresscode__card">
+    <div class="dresscode__header">
+      <span class="dresscode__label">Dress Code</span>
+      <div class="dresscode__divider" aria-hidden="true"></div>
+    </div>
+
+    {note && <p class="dresscode__note">{note}</p>}
+
+    {palette && palette.length > 0 && (
+      <div class="dresscode__swatches" role="list" aria-label="Palet warna cadangan">
+        {palette.map((color) => (
+          <div class="dresscode__swatch-item" role="listitem">
+            <div
+              class="dresscode__swatch"
+              style={`background-color: ${color.hex};`}
+              aria-label={color.name}
+              title={`${color.name} (${color.hex})`}
+            ></div>
+            <span class="dresscode__swatch-name">{color.name}</span>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .dresscode {
+    padding: clamp(48px, 8vw, 96px) clamp(20px, 5vw, 80px);
+  }
+
+  .dresscode__card {
+    background-color: #F5F0E8;
+    box-shadow: 0 4px 32px rgba(44, 44, 44, 0.08), 0 1px 4px rgba(44, 44, 44, 0.04);
+    padding: clamp(36px, 5vw, 56px);
+    max-width: 600px;
+    margin-right: auto;
+    position: relative;
+  }
+
+  /* Bottom-right gold corner accent */
+  .dresscode__card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    border-bottom: 1px solid #C5A55A;
+    border-right: 1px solid #C5A55A;
+    pointer-events: none;
+  }
+
+  .dresscode__header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .dresscode__label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #8A8A8A;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .dresscode__divider {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, #C5A55A 0%, transparent 100%);
+  }
+
+  .dresscode__note {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(13px, 1.8vw, 15px);
+    color: #8A8A8A;
+    line-height: 1.65;
+    margin: 0 0 28px;
+  }
+
+  .dresscode__swatches {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .dresscode__swatch-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dresscode__swatch {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(44, 44, 44, 0.12);
+    transition: transform 0.2s ease;
+    cursor: default;
+  }
+
+  .dresscode__swatch:hover {
+    transform: scale(1.08);
+  }
+
+  .dresscode__swatch-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: #8A8A8A;
+    letter-spacing: 0.06em;
+    text-align: center;
+  }
+
+  @media (max-width: 600px) {
+    .dresscode__card {
+      max-width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dresscode__swatch {
+      transition: none;
+    }
+    .dresscode__swatch:hover {
+      transform: none;
+    }
+  }
+</style>
